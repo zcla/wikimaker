@@ -222,14 +222,18 @@ public class BibliaJerusalem {
 
     private void makeWiki(Biblia biblia, File wikiEmptyFile, File wikiOutputFile) throws IOException {
         log.info("\tMaking wiki");
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        DateTimeFormatter dtfHuman = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        DateTimeFormatter dtfTiddlyWiki = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
 
         TiddlyWiki tiddlyWiki = new TiddlyWiki(wikiEmptyFile);
         tiddlyWiki.setSiteTitle(biblia.getNome());
-        tiddlyWiki.setSiteSubtitle("Importada [[daqui|" + biblia.getUrl() + "]] em " + biblia.getTimestamp().format(dtf) + ".");
+        tiddlyWiki.setSiteSubtitle("Importada [[daqui|" + biblia.getUrl() + "]] em " + biblia.getTimestamp().format(dtfHuman) + ".");
 
         // Bíblia
         Tiddler tiddlerBiblia = new Tiddler("Bíblia");
+        tiddlerBiblia.getCustomProperties().put("nome", biblia.getNome());
+        tiddlerBiblia.getCustomProperties().put("url", biblia.getUrl());
+        tiddlerBiblia.getCustomProperties().put("timestamp", biblia.getTimestamp().format(dtfTiddlyWiki));
         tiddlerBiblia.setText("! Livros");
         for (Livro livro : biblia.getLivros()) {
             tiddlerBiblia.setText(tiddlerBiblia.getText() + "\n* [[" + livro.getNome() + "|" + livro.getSigla() + "]]");
@@ -239,6 +243,11 @@ public class BibliaJerusalem {
         // Livros
         for (Livro livro : biblia.getLivros()) {
             Tiddler tiddlerLivro = new Tiddler(livro.getSigla());
+            tiddlerLivro.setTags("Livro");
+            tiddlerLivro.getCustomProperties().put("sigla", livro.getSigla());
+            tiddlerLivro.getCustomProperties().put("nome", livro.getNome());
+            tiddlerLivro.getCustomProperties().put("url", livro.getUrl());
+            tiddlerLivro.getCustomProperties().put("timestamp", livro.getTimestamp().format(dtfTiddlyWiki));
             tiddlerLivro.setText("! Capítulos");
             for (Capitulo capitulo : livro.getCapitulos()) {
                 tiddlerLivro.setText(tiddlerLivro.getText() + "\n* [[" + capitulo.getNumero() + "|" + livro.getSigla() + " " + capitulo.getNumero() + "]]");
@@ -250,6 +259,11 @@ public class BibliaJerusalem {
         for (Livro livro : biblia.getLivros()) {
             for (Capitulo capitulo : livro.getCapitulos()) {
                 Tiddler tiddlerCapitulo = new Tiddler(livro.getSigla() + " " + capitulo.getNumero());
+                tiddlerCapitulo.setTags("Capítulo");
+                tiddlerCapitulo.getCustomProperties().put("livro", "[[" + livro.getSigla() + "]]");
+                tiddlerCapitulo.getCustomProperties().put("numero", capitulo.getNumero().toString());
+                tiddlerCapitulo.getCustomProperties().put("url", capitulo.getUrl());
+                tiddlerCapitulo.getCustomProperties().put("timestamp", capitulo.getTimestamp().format(dtfTiddlyWiki));
                 tiddlerCapitulo.setText("! Texto");
                 for (String html : capitulo.getHtml()) {
                     tiddlerCapitulo.setText(tiddlerCapitulo.getText() + "\n\n" + html);
