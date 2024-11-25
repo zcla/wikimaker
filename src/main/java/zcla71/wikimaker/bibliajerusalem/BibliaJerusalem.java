@@ -2,6 +2,8 @@ package zcla71.wikimaker.bibliajerusalem;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.SocketTimeoutException;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import org.jsoup.HttpStatusException;
@@ -17,6 +19,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import lombok.extern.slf4j.Slf4j;
+import zcla71.tiddlywiki.Tiddler;
+import zcla71.tiddlywiki.TiddlyWiki;
 
 @Slf4j
 public class BibliaJerusalem {
@@ -29,7 +33,7 @@ public class BibliaJerusalem {
     private static final String BASE_URL = "https://liturgiadashoras.online/biblia/biblia-jerusalem/";
     private static final String REGEX_LIVRO = "^https:\\/\\/liturgiadashoras\\.online\\/biblia\\/biblia-jerusalem\\/([^\\/]+)\\/$";
     private static final String REGEX_LIVRO_GROUP_SIGLA = "$1";
-    private static final String REGEX_CAPITULO = "^https:\\/\\/liturgiadashoras\\.online\\/biblia\\/biblia-jerusalem\\/([^\\/]+)\\/([\\d\\-]+)\\/$";
+    private static final String REGEX_CAPITULO = "^https:\\/\\/liturgiadashoras\\.online\\/biblia\\/biblia-jerusalem\\/([^\\/]+)\\/(.+)\\/$";
     private static final String JSON_DOWNLOAD_FILE_NAME = "./data/BibliaJerusalem.json";
     private static final Map<String, String> MAP_LIVRO = Map.ofEntries(
             Map.entry("genesis", "Gn"),
@@ -105,8 +109,8 @@ public class BibliaJerusalem {
             Map.entry("iii-ioannis", "3Jo"),
             Map.entry("iudae", "Jd"),
             Map.entry("apocalypsis", "Ap"));
-    // private static final String WIKI_EMPTY_FILE = "./data/empty.html";
-    // private static final String WIKI_OUTPUT_FILE = "./data/BibliaJerusalem.html";
+    private static final String WIKI_EMPTY_FILE = "./data/empty.html";
+    private static final String WIKI_OUTPUT_FILE = "./data/BibliaJerusalem.html";
 
     public BibliaJerusalem() throws IOException {
         log.info("BibliaJerusalem");
@@ -127,17 +131,19 @@ public class BibliaJerusalem {
             biblia = objectMapper.readValue(jsonDownloadFile, Biblia.class);
         }
 
-        // File wikiEmptyFile = new File(WIKI_EMPTY_FILE);
-        // if (!wikiEmptyFile.exists()) {
-        // log.error("Wiki vazio não encontrado.");
-        // return;
+        File wikiEmptyFile = new File(WIKI_EMPTY_FILE);
+        if (!wikiEmptyFile.exists()) {
+            log.error("Wiki vazio não encontrado.");
+            return;
+        }
+
+        File wikiOutputFile = new File(WIKI_OUTPUT_FILE);
+        // if (wikiOutputFile.exists()) {
+        //     log.info("Wiki já gerado.");
+        //     return;
         // }
 
-        // File wikiOutputFile = new File(WIKI_OUTPUT_FILE);
-        // if (wikiOutputFile.exists()) {
-        // log.info("Wiki já gerado.");
-        // return;
-        // }
+        makeWiki(biblia, wikiEmptyFile, wikiOutputFile);
     }
 
     private Biblia downloadBiblia(File jsonDownloadFile) throws IOException {
@@ -171,10 +177,11 @@ public class BibliaJerusalem {
             String href = link.attr("href").replace("liturgiahorarum", "liturgiadashoras"); // ¯\_(ツ)_/¯
             if (href.matches(REGEX_CAPITULO)) {
                 String capitulo = link.text();
-                while (!result.getCapitulos().stream().filter(c -> c.getNumero().equals(capitulo)).findAny().isPresent()) {
+                while (!result.getCapitulos().stream().filter(c -> c.getNumero().equals(capitulo)).findAny()
+                        .isPresent()) {
                     try {
                         result.getCapitulos().add(downloadCapitulo(capitulo, href));
-                    } catch (HttpStatusException e) {
+                    } catch (HttpStatusException | SocketTimeoutException e) {
                         log.warn("\t\t\t\t" + e.getMessage());
                         // Vai continuar tentando, até conseguir.
                     }
@@ -186,7 +193,7 @@ public class BibliaJerusalem {
             while (!result.getCapitulos().stream().filter(c -> c.getNumero().equals("1")).findAny().isPresent()) {
                 try {
                     result.getCapitulos().add(downloadCapitulo("1", url + "1-2/"));
-                } catch (HttpStatusException e) {
+                } catch (HttpStatusException | SocketTimeoutException e) {
                     log.warn("\t\t\t\t" + e.getMessage());
                     // Vai continuar tentando, até conseguir.
                 }
@@ -206,11 +213,54 @@ public class BibliaJerusalem {
         for (Element entryContent : entryContents) {
             for (Element bloco : entryContent.children()) {
                 if (bloco.text().trim().length() > 0) {
-                    result.getHtml().add(bloco.html());
+                    result.getHtml().add(bloco.outerHtml());
                 }
             }
         }
 
         return result;
+    }
+
+    private void makeWiki(Biblia biblia, File wikiEmptyFile, File wikiOutputFile) throws IOException {
+        log.info("\tMaking wiki");
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+
+        TiddlyWiki tiddlyWiki = new TiddlyWiki(wikiEmptyFile);
+        tiddlyWiki.setSiteTitle(biblia.getNome());
+        tiddlyWiki.setSiteSubtitle("Importada [[daqui|" + biblia.getUrl() + "]] em " + biblia.getTimestamp().format(dtf) + ".");
+
+        // Bíblia
+        Tiddler tiddlerBiblia = new Tiddler("Bíblia");
+        tiddlerBiblia.setText("! Livros");
+        for (Livro livro : biblia.getLivros()) {
+            tiddlerBiblia.setText(tiddlerBiblia.getText() + "\n* [[" + livro.getNome() + "|" + livro.getSigla() + "]]");
+        }
+        tiddlyWiki.insert(tiddlerBiblia);
+
+        // Livros
+        for (Livro livro : biblia.getLivros()) {
+            Tiddler tiddlerLivro = new Tiddler(livro.getSigla());
+            tiddlerLivro.setText("! Capítulos");
+            for (Capitulo capitulo : livro.getCapitulos()) {
+                tiddlerLivro.setText(tiddlerLivro.getText() + "\n* [[" + capitulo.getNumero() + "|" + livro.getSigla() + " " + capitulo.getNumero() + "]]");
+            }
+            tiddlyWiki.insert(tiddlerLivro);
+        }
+
+        // Capítulos
+        for (Livro livro : biblia.getLivros()) {
+            for (Capitulo capitulo : livro.getCapitulos()) {
+                Tiddler tiddlerCapitulo = new Tiddler(livro.getSigla() + " " + capitulo.getNumero());
+                tiddlerCapitulo.setText("! Texto");
+                for (String html : capitulo.getHtml()) {
+                    tiddlerCapitulo.setText(tiddlerCapitulo.getText() + "\n\n" + html);
+                }
+                tiddlyWiki.insert(tiddlerCapitulo);
+            }
+        }
+
+        tiddlyWiki.setDefaultTiddlers(tiddlerBiblia.getTitle());
+
+        tiddlyWiki.save(wikiOutputFile);
     }
 }
