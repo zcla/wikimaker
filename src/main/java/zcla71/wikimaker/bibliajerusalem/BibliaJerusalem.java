@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.jsoup.HttpStatusException;
@@ -172,26 +173,50 @@ public class BibliaJerusalem {
 
         Document html = Jsoup.connect(url).get();
         Elements links = html.select("a");
+        Map<String, String> capitulos = new LinkedHashMap<>();
         for (Element link : links) {
-            String href = link.attr("href").replace("liturgiahorarum", "liturgiadashoras"); // ¯\_(ツ)_/¯
+            String href = link.attr("href") // Erros meio bizarros ¯\_(ツ)_/¯
+                    .replace("liturgiahorarum", "liturgiadashoras") // Vários lugares
+                    .replace("comunidade /", ""); // At 1
             if (href.matches(REGEX_CAPITULO)) {
-                String capitulo = link.text();
-                while (!result.getCapitulos().stream().filter(c -> c.getNumero().equals(capitulo)).findAny()
-                        .isPresent()) {
-                    try {
-                        result.getCapitulos().add(downloadCapitulo(capitulo, href));
-                    } catch (HttpStatusException | SocketTimeoutException e) {
-                        log.warn("\t\t\t\t" + e.getMessage());
-                        // Vai continuar tentando, até conseguir.
-                    }
-                }
+                String capitulo = ((Integer)Integer.parseInt(link.text())).toString();
+                capitulos.put(capitulo, href);
             }
         }
-        if (result.getCapitulos().size() == 0) {
-            // Jd não lista os capítulos, mas ele está lá no site; basta montar a url como nos outros livros
-            while (!result.getCapitulos().stream().filter(c -> c.getNumero().equals("1")).findAny().isPresent()) {
+        switch (result.getSigla()) {
+            case "Rt":
+                // Rt traz a lista errada, mas os 4 capítulos estão no site.
+                capitulos.clear();
+                for (Integer i = 1; i <= 4; i++) {
+                    capitulos.put(i.toString(), url + i.toString() + "-2/");
+                }
+                break;
+
+            case "Mq":
+                // Mq não lista o capítulo 7, cujo texto está no site.
+                if (result.getCapitulos().size() == 0) {
+                    capitulos.put("7", url + "7-2/");
+                }
+                break;
+
+            case "Jd":
+                // Jd não lista o único capítulo, cujo texto está no site.
+                if (result.getCapitulos().size() == 0) {
+                    capitulos.put("1", url + "1-2/");
+                }
+                break;
+        
+            default:
+                break;
+        }
+        for (String capitulo : capitulos.keySet()) {
+            String href = capitulos.get(capitulo);
+            if (!href.startsWith(url)) { // Acontece com todos os salmos, mas só com eles
+                log.warn("Possível url errada: " + href);
+            }
+            while (!result.getCapitulos().stream().filter(c -> c.getNumero().toString().equals(capitulo)).findAny().isPresent()) {
                 try {
-                    result.getCapitulos().add(downloadCapitulo("1", url + "1-2/"));
+                    result.getCapitulos().add(downloadCapitulo(capitulo, href));
                 } catch (HttpStatusException | SocketTimeoutException e) {
                     log.warn("\t\t\t\t" + e.getMessage());
                     // Vai continuar tentando, até conseguir.
