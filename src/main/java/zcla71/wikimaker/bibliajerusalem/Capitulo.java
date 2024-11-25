@@ -10,13 +10,13 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class Capitulo {
-    private String numero;
+    private Integer numero;
     private String url;
     private LocalDateTime timestamp;
     private Collection<String> html;
 
     public Capitulo(String numero, String url) {
-        this.numero = numero;
+        this.numero = Integer.parseInt(numero);
         this.url = url;
         this.timestamp = LocalDateTime.now();
         this.html = new ArrayList<>();
