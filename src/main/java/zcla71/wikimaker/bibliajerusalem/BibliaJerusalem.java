@@ -25,11 +25,6 @@ import zcla71.tiddlywiki.TiddlyWiki;
 
 @Slf4j
 public class BibliaJerusalem {
-    // TODO Só pra acelerar no desenvolvimento; remover ao final.
-    public static void main(String[] args) throws IOException {
-        new BibliaJerusalem();
-    }
-
     private static final String NOME = "Bíblia de Jerusalém";
     private static final String BASE_URL = "https://liturgiadashoras.online/biblia/biblia-jerusalem/";
     private static final String REGEX_LIVRO = "^https:\\/\\/liturgiadashoras\\.online\\/biblia\\/biblia-jerusalem\\/([^\\/]+)\\/$";
