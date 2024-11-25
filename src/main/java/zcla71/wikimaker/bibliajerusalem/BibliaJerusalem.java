@@ -131,18 +131,17 @@ public class BibliaJerusalem {
             biblia = objectMapper.readValue(jsonDownloadFile, Biblia.class);
         }
 
-        File wikiEmptyFile = new File(WIKI_EMPTY_FILE);
-        if (!wikiEmptyFile.exists()) {
-            log.error("Wiki vazio não encontrado.");
-            return;
-        }
-
         File wikiOutputFile = new File(WIKI_OUTPUT_FILE);
         // if (wikiOutputFile.exists()) {
-        //     log.info("Wiki já gerado.");
+        //     log.info("\tWiki já gerado.");
         //     return;
         // }
 
+        File wikiEmptyFile = new File(WIKI_EMPTY_FILE);
+        if (!wikiEmptyFile.exists()) {
+            log.error("\tWiki vazio não encontrado.");
+            return;
+        }
         makeWiki(biblia, wikiEmptyFile, wikiOutputFile);
     }
 
