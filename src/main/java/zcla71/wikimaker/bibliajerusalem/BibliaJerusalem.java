@@ -2,21 +2,21 @@ package zcla71.wikimaker.bibliajerusalem;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Map;
 
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.fasterxml.jackson.core.util.DefaultIndenter;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import lombok.extern.slf4j.Slf4j;
-import zcla71.wikimaker.biblia.Biblia;
-import zcla71.wikimaker.biblia.Capitulo;
-import zcla71.wikimaker.biblia.Livro;
 
 @Slf4j
 public class BibliaJerusalem {
@@ -112,13 +112,17 @@ public class BibliaJerusalem {
         log.info("BibliaJerusalem");
 
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        DefaultPrettyPrinter prettyPrinter = new DefaultPrettyPrinter();
+        prettyPrinter.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE);
 
         File jsonDownloadFile = new File(JSON_DOWNLOAD_FILE_NAME);
         Biblia biblia = null;
         if (!jsonDownloadFile.exists()) {
             biblia = downloadBiblia(jsonDownloadFile);
-            objectMapper.writeValue(jsonDownloadFile, biblia);
+            objectMapper.writer(prettyPrinter).writeValue(jsonDownloadFile, biblia);
         } else {
             biblia = objectMapper.readValue(jsonDownloadFile, Biblia.class);
         }
@@ -139,10 +143,7 @@ public class BibliaJerusalem {
     private Biblia downloadBiblia(File jsonDownloadFile) throws IOException {
         log.info("\tDownload");
 
-        Biblia result = new Biblia();
-        result.setNome(NOME);
-        result.setUrl(BASE_URL);
-        result.setLivros(new ArrayList<>());
+        Biblia result = new Biblia(NOME, BASE_URL);
 
         Document html = Jsoup.connect(BASE_URL).get();
         Elements links = html.select("a");
@@ -162,11 +163,7 @@ public class BibliaJerusalem {
     private Livro downloadLivro(String sigla, String nome, String url) throws IOException {
         log.info("\t\t" + sigla);
 
-        Livro result = new Livro();
-        result.setSigla(sigla);
-        result.setNome(nome);
-        result.setUrl(url);
-        result.setCapitulos(new ArrayList<>());
+        Livro result = new Livro(sigla, nome, url);
 
         Document html = Jsoup.connect(url).get();
         Elements links = html.select("a");
@@ -174,12 +171,26 @@ public class BibliaJerusalem {
             String href = link.attr("href").replace("liturgiahorarum", "liturgiadashoras"); // ¯\_(ツ)_/¯
             if (href.matches(REGEX_CAPITULO)) {
                 String capitulo = link.text();
-                result.getCapitulos().add(downloadCapitulo(capitulo, href));
+                while (!result.getCapitulos().stream().filter(c -> c.getNumero().equals(capitulo)).findAny().isPresent()) {
+                    try {
+                        result.getCapitulos().add(downloadCapitulo(capitulo, href));
+                    } catch (HttpStatusException e) {
+                        log.warn("\t\t\t\t" + e.getMessage());
+                        // Vai continuar tentando, até conseguir.
+                    }
+                }
             }
         }
         if (result.getCapitulos().size() == 0) {
             // Jd não lista os capítulos, mas ele está lá no site; basta montar a url como nos outros livros
-            result.getCapitulos().add(downloadCapitulo("1", url + "1-2/"));
+            while (!result.getCapitulos().stream().filter(c -> c.getNumero().equals("1")).findAny().isPresent()) {
+                try {
+                    result.getCapitulos().add(downloadCapitulo("1", url + "1-2/"));
+                } catch (HttpStatusException e) {
+                    log.warn("\t\t\t\t" + e.getMessage());
+                    // Vai continuar tentando, até conseguir.
+                }
+            }
         }
 
         return result;
@@ -188,10 +199,7 @@ public class BibliaJerusalem {
     private Capitulo downloadCapitulo(String numero, String url) throws IOException {
         log.info("\t\t\t" + numero);
 
-        Capitulo result = new Capitulo();
-        result.setNumero(numero);
-        result.setUrl(url);
-        result.setHtml(new ArrayList<>());
+        Capitulo result = new Capitulo(numero, url);
 
         Document html = Jsoup.connect(url).get();
         Elements entryContents = html.select(".entry-content");
