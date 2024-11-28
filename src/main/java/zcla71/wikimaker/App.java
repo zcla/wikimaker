@@ -18,6 +18,8 @@ public class App {
 		//   [es] https://www.vatican.va/archive/ESL0506/_INDEX.HTM
 		//   [it] https://www.vatican.va/archive/ITA0001/_INDEX.HTM
 		//   [lt] https://www.vatican.va/archive/bible/nova_vulgata/documents/nova-vulgata_index_lt.html
+		// clerus.org https://www.clerus.org/bibliaclerusonline/pt/index.htm
+		//   [pt] https://www.clerus.org/bibliaclerusonline/pt/66c.htm
 		// intratext.com
 		//   [vários] https://www.intratext.com/BIBLE/default.htm
 		// newadvent.org
