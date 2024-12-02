@@ -33,6 +33,12 @@ public class App {
 		// scaife.perseus.org
 		//   !!!XML!!! [el/en] https://scaife.perseus.org/library/urn:cts:greekLit:tlg0527/ (AT Septuaginta / World English Bible)
 		//				       https://scaife.perseus.org/library/urn:cts:greekLit:tlg0031/ (The New Testament in the original Greek / World English Bible)
+		// usccb.org (OFICIAL EUA)
+		//	 [en] https://www.usccb.org/offices/new-american-bible/books-bible (New American Bible)
+		// biblegateway.com
+		//   [en] https://www.biblegateway.com/passage/?search=Genesis%201&version=NCB (New Catholic Bible)
+		//   [en] https://www.biblegateway.com/passage/?search=Genesis%201&version=RSVCE (Revised Standard Version Catholic Edition)
+		//   [en] https://www.biblegateway.com/passage/?search=Genesis%201&version=NRSVCE (New Revised Standard Version Catholic Edition)
 
 		SpringApplication.run(App.class, args);
 	}
