@@ -472,7 +472,7 @@ public class LiturgiaDasHorasOnlineBiblia {
             }
         }
         // Adiciona links para os versículos
-        html = html.replaceAll("<sup>(.+?)<\\/sup>", "<sup>[[$1|" + tiddlerCapitulo.getTitle() + ",$1]]<\\/sup>");
+        html = html.replaceAll("<sup>(.+?)<\\/sup>\\{\\{(.+?)\\}\\}", "<sup>[[$1|$2]]<\\/sup>{{$2}}");
         tiddlerCapitulo.setText(html);
     }
 }
