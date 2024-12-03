@@ -27,10 +27,12 @@ public class App {
 		//   [pt] https://www.clerus.org/bibliaclerusonline/pt/66c.htm
 		// intratext.com
 		//   [vários] https://www.intratext.com/BIBLE/default.htm
+		//   [pt] https://www.intratext.com/IXT/POR0013/__P1.HTM "A Bíblia" - parece muito fácil de baixar
 		// newadvent.org
 		//   [el/en/lt] https://www.newadvent.org/bible/
 		// paulus.com.br
 		//   [pt] https://www.paulus.com.br/biblia-pastoral/_INDEX.HTM
+		//   [pt] https://biblia.paulus.com.br/
 		// perseus.tufts.edu
 		//   !!!XML!!! [lt] https://www.perseus.tufts.edu/hopper/text?doc=Perseus%3atext%3a1999.02.0060 (Jerome. Vulgate Bible.)
 		//   !!!XML!!! [el] https://www.perseus.tufts.edu/hopper/text?doc=Perseus%3atext%3a1999.01.0155 (The New Testament in the original Greek.)
