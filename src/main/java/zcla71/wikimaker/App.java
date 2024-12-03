@@ -19,6 +19,11 @@ public class App {
 		//   [it] https://www.vatican.va/archive/ITA0001/_INDEX.HTM
 		//   [lt] https://www.vatican.va/archive/bible/nova_vulgata/documents/nova-vulgata_index_lt.html
 		// clerus.org https://www.clerus.org/bibliaclerusonline/pt/index.htm
+		//   [de] https://www.clerus.org/bibliaclerusonline/de/66c.htm
+		//   [en] https://www.clerus.org/bibliaclerusonline/en/66c.htm
+		//   [es] https://www.clerus.org/bibliaclerusonline/es/66c.htm
+		//   [fr] https://www.clerus.org/bibliaclerusonline/fr/66c.htm
+		//   [it] https://www.clerus.org/bibliaclerusonline/it/66c.htm
 		//   [pt] https://www.clerus.org/bibliaclerusonline/pt/66c.htm
 		// intratext.com
 		//   [vários] https://www.intratext.com/BIBLE/default.htm
