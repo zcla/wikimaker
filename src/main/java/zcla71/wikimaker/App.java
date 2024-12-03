@@ -18,6 +18,14 @@ public class App {
 		//   [es] https://www.vatican.va/archive/ESL0506/_INDEX.HTM
 		//   [it] https://www.vatican.va/archive/ITA0001/_INDEX.HTM
 		//   [lt] https://www.vatican.va/archive/bible/nova_vulgata/documents/nova-vulgata_index_lt.html
+		// a12.com
+		//   [pt] https://www.a12.com/biblia Bíblia de Aparecida (TEM API)
+		// bibliacatolica.com.br
+		//   [vários]
+		//   [pt] https://www.bibliacatolica.com.br/biblia-ave-maria/genesis/1/ Ave Maria
+		//   [pt] https://www.bibliacatolica.com.br/biblia-matos-soares-1956/genesis/1/ Matos Soares 1956
+		// claretianos.com.br
+		//   [pt] https://claretianos.com.br/biblia-ave-maria-online/ Ave Maria (TEM API JSON)
 		// clerus.org https://www.clerus.org/bibliaclerusonline/pt/index.htm
 		//   [de] https://www.clerus.org/bibliaclerusonline/de/66c.htm
 		//   [en] https://www.clerus.org/bibliaclerusonline/en/66c.htm
@@ -26,7 +34,7 @@ public class App {
 		//   [it] https://www.clerus.org/bibliaclerusonline/it/66c.htm
 		//   [pt] https://www.clerus.org/bibliaclerusonline/pt/66c.htm
 		// intratext.com
-		//   [vários] https://www.intratext.com/BIBLE/default.htm
+		//   [várias] https://www.intratext.com/BIBLE/default.htm
 		//   [pt] https://www.intratext.com/IXT/POR0013/__P1.HTM "A Bíblia" - parece muito fácil de baixar
 		// newadvent.org
 		//   [el/en/lt] https://www.newadvent.org/bible/
@@ -40,6 +48,9 @@ public class App {
 		// scaife.perseus.org
 		//   !!!XML!!! [el/en] https://scaife.perseus.org/library/urn:cts:greekLit:tlg0527/ (AT Septuaginta / World English Bible)
 		//				       https://scaife.perseus.org/library/urn:cts:greekLit:tlg0031/ (The New Testament in the original Greek / World English Bible)
+		// tuapalavra.com.br
+		//   [várias] https://amp.tuapalavra.com.br/pt-BR
+		//   [pt] https://amp.tuapalavra.com.br/pt-BR/CNBB CNBB
 		// usccb.org (OFICIAL EUA)
 		//	 [en] https://www.usccb.org/offices/new-american-bible/books-bible (New American Bible)
 		// biblegateway.com
