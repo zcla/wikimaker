@@ -111,8 +111,6 @@ public class LiturgiaDasHorasOnlineBiblia {
     private static final String WIKI_EMPTY_FILE = "./data/tiddlywiki_empty.html";
     private static final String WIKI_OUTPUT_FILE = "./data/" + ID + ".html";
 
-    private final DateTimeFormatter DATE_TIME_FORMATTER_TIDDLYWIKI = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
-
     public LiturgiaDasHorasOnlineBiblia() throws IOException {
         log.info(ID);
 
@@ -125,12 +123,12 @@ public class LiturgiaDasHorasOnlineBiblia {
 
         File jsonDownloadFile = new File(JSON_DOWNLOAD_FILE_NAME);
         Biblia biblia = null;
-        if (!jsonDownloadFile.exists()) {
-            biblia = downloadBiblia(jsonDownloadFile);
-            objectMapper.writer(prettyPrinter).writeValue(jsonDownloadFile, biblia);
-        } else {
+        if (jsonDownloadFile.exists()) {
             log.info("\tJson já gerado.");
             biblia = objectMapper.readValue(jsonDownloadFile, Biblia.class);
+        } else {
+            biblia = downloadBiblia(jsonDownloadFile);
+            objectMapper.writer(prettyPrinter).writeValue(jsonDownloadFile, biblia);
         }
 
         File wikiOutputFile = new File(WIKI_OUTPUT_FILE);
@@ -264,7 +262,7 @@ public class LiturgiaDasHorasOnlineBiblia {
         Tiddler tiddlerBiblia = new Tiddler("Bíblia");
         tiddlerBiblia.getCustomProperties().put("nome", biblia.getNome());
         tiddlerBiblia.getCustomProperties().put("url", biblia.getUrl());
-        tiddlerBiblia.getCustomProperties().put("timestamp", biblia.getTimestamp().format(DATE_TIME_FORMATTER_TIDDLYWIKI));
+        tiddlerBiblia.getCustomProperties().put("timestamp", biblia.getTimestamp().format(TiddlyWiki.DATE_TIME_FORMATTER_TIDDLYWIKI));
         tiddlerBiblia.setText("! Livros");
         for (Livro livro : biblia.getLivros()) {
             tiddlerBiblia.setText(tiddlerBiblia.getText() + "\n* [[" + livro.getNome() + "|" + livro.getSigla() + "]]");
@@ -280,7 +278,7 @@ public class LiturgiaDasHorasOnlineBiblia {
         tiddlerLivro.getCustomProperties().put("sigla", livro.getSigla());
         tiddlerLivro.getCustomProperties().put("nome", livro.getNome());
         tiddlerLivro.getCustomProperties().put("url", livro.getUrl());
-        tiddlerLivro.getCustomProperties().put("timestamp", livro.getTimestamp().format(DATE_TIME_FORMATTER_TIDDLYWIKI));
+        tiddlerLivro.getCustomProperties().put("timestamp", livro.getTimestamp().format(TiddlyWiki.DATE_TIME_FORMATTER_TIDDLYWIKI));
         tiddlerLivro.setText("! Capítulos");
         for (Capitulo capitulo : livro.getCapitulos()) {
             tiddlerLivro.setText(tiddlerLivro.getText() + "\n* [[" + capitulo.getNumero() + "|" + livro.getSigla() + " " + capitulo.getNumero() + "]]");
@@ -295,7 +293,7 @@ public class LiturgiaDasHorasOnlineBiblia {
         tiddlerCapitulo.getCustomProperties().put("livro", "[[" + livro.getSigla() + "]]");
         tiddlerCapitulo.getCustomProperties().put("numero", capitulo.getNumero().toString());
         tiddlerCapitulo.getCustomProperties().put("url", capitulo.getUrl());
-        tiddlerCapitulo.getCustomProperties().put("timestamp", capitulo.getTimestamp().format(DATE_TIME_FORMATTER_TIDDLYWIKI));
+        tiddlerCapitulo.getCustomProperties().put("timestamp", capitulo.getTimestamp().format(TiddlyWiki.DATE_TIME_FORMATTER_TIDDLYWIKI));
         tiddlerCapitulo.setText("");
         for (String html : capitulo.getHtml()) {
             tiddlerCapitulo.setText(tiddlerCapitulo.getText() + html);

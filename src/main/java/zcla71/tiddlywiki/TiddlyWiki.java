@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.jsoup.Jsoup;
@@ -19,6 +20,8 @@ public class TiddlyWiki {
     private Document html;
     private List<Tiddler> tiddlers;
     private File arquivo;
+
+    public static final DateTimeFormatter DATE_TIME_FORMATTER_TIDDLYWIKI = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
 
     public TiddlyWiki(File arquivo) throws IOException {
         super();
