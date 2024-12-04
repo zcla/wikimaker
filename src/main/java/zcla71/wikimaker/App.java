@@ -1,16 +1,19 @@
 package zcla71.wikimaker;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import zcla71.wikimaker.bibliaparresiacom.bible.BibliaParresiaComBible;
 import zcla71.wikimaker.liturgiadashorasonline.biblia.LiturgiaDasHorasOnlineBiblia;
 
 @SpringBootApplication
 public class App {
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, ClassNotFoundException, URISyntaxException {
 		// Bíblias
+		new BibliaParresiaComBible();
 		new LiturgiaDasHorasOnlineBiblia();
 		// vatican.va https://www.vatican.va/archive/bible/index_po.htm
 		//   [cn] https://www.vatican.va/chinese/bibbia.htm
@@ -24,8 +27,6 @@ public class App {
 		//   [vários]
 		//   [pt] https://www.bibliacatolica.com.br/biblia-ave-maria/genesis/1/ Ave Maria
 		//   [pt] https://www.bibliacatolica.com.br/biblia-matos-soares-1956/genesis/1/ Matos Soares 1956
-		// claretianos.com.br
-		//   [pt] https://claretianos.com.br/biblia-ave-maria-online/ Ave Maria (TEM API JSON)
 		// clerus.org https://www.clerus.org/bibliaclerusonline/pt/index.htm
 		//   [de] https://www.clerus.org/bibliaclerusonline/de/66c.htm
 		//   [en] https://www.clerus.org/bibliaclerusonline/en/66c.htm
