@@ -22,6 +22,7 @@ public class TiddlyWiki {
     private File arquivo;
 
     public static final DateTimeFormatter DATE_TIME_FORMATTER_TIDDLYWIKI = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
+    public static final String LINE_BREAK = "\r\n";
 
     public TiddlyWiki(File arquivo) throws IOException {
         super();
