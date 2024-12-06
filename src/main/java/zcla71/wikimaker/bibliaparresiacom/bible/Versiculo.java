@@ -9,6 +9,6 @@ public class Versiculo {
     private Integer chapter;
     @JsonProperty("chapter_slug")
     private String chapterSlug;
-    private Integer number;
+    private String number;
     private String text;
 }

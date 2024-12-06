@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -19,6 +20,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import lombok.extern.slf4j.Slf4j;
+import zcla71.tiddlywiki.Tiddler;
+import zcla71.tiddlywiki.TiddlyWiki;
 
 @Slf4j
 public class BibliaParresiaComBible {
@@ -133,20 +136,21 @@ new BibliaParresiaComBible();
             return;
         }
 
-        // File wikiEmptyFile = new File(WIKI_EMPTY_FILE);
-        // if (!wikiEmptyFile.exists()) {
-        //     log.error("\tWiki vazio não encontrado.");
-        //     return;
-        // }
-        // makeWiki(biblia, wikiEmptyFile, wikiOutputFile);
+        File wikiEmptyFile = new File(WIKI_EMPTY_FILE);
+        if (!wikiEmptyFile.exists()) {
+            log.error("\tWiki vazio não encontrado.");
+            return;
+        }
+        makeWiki(biblia, wikiEmptyFile, wikiOutputFile);
     }
 
     private Biblia downloadBiblia(ObjectMapper objectMapper, File jsonDownloadFile) throws URISyntaxException, StreamReadException, DatabindException, IOException {
         log.info("\tDownload");
 
-        Biblia result = new Biblia(NOME, SITE_URL, BASE_API_URL);
+        String strUrlBooks = BASE_API_URL + "books";
+        Biblia result = new Biblia(NOME, SITE_URL, strUrlBooks);
 
-        URL urlBooks = new URI(BASE_API_URL + "books").toURL();
+        URL urlBooks = new URI(strUrlBooks).toURL();
         Collection<Livro> livros = objectMapper.readValue(urlBooks, new TypeReference<Collection<Livro>>(){});
         result.setLivros(livros);
 
@@ -157,10 +161,11 @@ new BibliaParresiaComBible();
             livro.setCapitulos(new ArrayList<>());
             for (int i = 1; i <= livro.getChapterCount(); i++) {
                 log.info("\t\t\t" + i);
-                Capitulo capitulo = new Capitulo(i);
+                String strUrlChapter = BASE_API_URL + "chapter/" + livro.getSlug() + "_" + i + "/";
+                Capitulo capitulo = new Capitulo(i, strUrlChapter);
                 livro.getCapitulos().add(capitulo);
 
-                URL urlChapter = new URI(BASE_API_URL + "chapter/" + livro.getSlug() + "_" + i + "/").toURL();
+                URL urlChapter = new URI(strUrlChapter).toURL();
                 Collection<Versiculo> versiculos = objectMapper.readValue(urlChapter, new TypeReference<Collection<Versiculo>>(){});
                 capitulo.setVersiculos(versiculos);
             }
@@ -169,233 +174,86 @@ new BibliaParresiaComBible();
         return result;
     }
 
-    // private void makeWiki(Biblia biblia, File wikiEmptyFile, File wikiOutputFile) throws IOException {
-    //     log.info("\tMaking wiki");
-    //     DateTimeFormatter dtfHuman = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+    private void makeWiki(Biblia biblia, File wikiEmptyFile, File wikiOutputFile) throws IOException {
+        log.info("\tMaking wiki");
+        DateTimeFormatter dtfHuman = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
-    //     TiddlyWiki tiddlyWiki = new TiddlyWiki(wikiEmptyFile);
-    //     tiddlyWiki.setSiteTitle(biblia.getNome());
-    //     tiddlyWiki.setSiteSubtitle("Importada [[daqui|" + biblia.getUrl() + "]] em " + biblia.getTimestamp().format(dtfHuman) + ".");
+        TiddlyWiki tiddlyWiki = new TiddlyWiki(wikiEmptyFile);
+        tiddlyWiki.setSiteTitle(biblia.getNome());
+        tiddlyWiki.setSiteSubtitle("Importada [[daqui|" + biblia.getUrlSite() + "]] em " + biblia.getTimestamp().format(dtfHuman) + ".");
 
-    //     // Bíblia
-    //     bibliaToTiddler(biblia, tiddlyWiki);
+        // Bíblia
+        bibliaToTiddler(biblia, tiddlyWiki);
 
-    //     tiddlyWiki.save(wikiOutputFile);
-    // }
+        tiddlyWiki.save(wikiOutputFile);
+    }
 
-    // private void bibliaToTiddler(Biblia biblia, TiddlyWiki tiddlyWiki) {
-    //     Tiddler tiddlerBiblia = new Tiddler("Bíblia");
-    //     tiddlerBiblia.getCustomProperties().put("nome", biblia.getNome());
-    //     tiddlerBiblia.getCustomProperties().put("url", biblia.getUrl());
-    //     tiddlerBiblia.getCustomProperties().put("timestamp", biblia.getTimestamp().format(TiddlyWiki.DATE_TIME_FORMATTER_TIDDLYWIKI));
-    //     tiddlerBiblia.setText("! Livros");
-    //     for (Livro livro : biblia.getLivros()) {
-    //         tiddlerBiblia.setText(tiddlerBiblia.getText() + "\n* [[" + livro.getNome() + "|" + livro.getSigla() + "]]");
-    //         livroToTiddler(livro, tiddlyWiki);
-    //     }
-    //     tiddlyWiki.insert(tiddlerBiblia);
-    //     tiddlyWiki.setDefaultTiddlers(tiddlerBiblia.getTitle());
-    // }
+    private void bibliaToTiddler(Biblia biblia, TiddlyWiki tiddlyWiki) {
+        Tiddler tiddlerBiblia = new Tiddler("Bíblia");
+        tiddlerBiblia.getCustomProperties().put("nome", biblia.getNome());
+        tiddlerBiblia.getCustomProperties().put("url", biblia.getUrl());
+        tiddlerBiblia.getCustomProperties().put("timestamp", biblia.getTimestamp().format(TiddlyWiki.DATE_TIME_FORMATTER_TIDDLYWIKI));
+        tiddlerBiblia.setText("! Livros");
+        for (Livro livro : biblia.getLivros()) {
+            tiddlerBiblia.setText(tiddlerBiblia.getText() + "\n* [[" + livro.getChapter() + "|" + livro.getSigla() + "]]");
+            livroToTiddler(biblia, livro, tiddlyWiki);
+        }
+        tiddlyWiki.insert(tiddlerBiblia);
+        tiddlyWiki.setDefaultTiddlers(tiddlerBiblia.getTitle());
+    }
 
-    // private void livroToTiddler(Livro livro, TiddlyWiki tiddlyWiki) {
-    //     Tiddler tiddlerLivro = new Tiddler(livro.getSigla());
-    //     tiddlerLivro.setTags("Livro");
-    //     tiddlerLivro.getCustomProperties().put("sigla", livro.getSigla());
-    //     tiddlerLivro.getCustomProperties().put("nome", livro.getNome());
-    //     tiddlerLivro.getCustomProperties().put("url", livro.getUrl());
-    //     tiddlerLivro.getCustomProperties().put("timestamp", livro.getTimestamp().format(TiddlyWiki.DATE_TIME_FORMATTER_TIDDLYWIKI));
-    //     tiddlerLivro.setText("! Capítulos");
-    //     for (Capitulo capitulo : livro.getCapitulos()) {
-    //         tiddlerLivro.setText(tiddlerLivro.getText() + "\n* [[" + capitulo.getNumero() + "|" + livro.getSigla() + " " + capitulo.getNumero() + "]]");
-    //         capituloToTiddler(livro, capitulo, tiddlyWiki);
-    //     }
-    //     tiddlyWiki.insert(tiddlerLivro);
-    // }
+    private void livroToTiddler(Biblia biblia, Livro livro, TiddlyWiki tiddlyWiki) {
+        log.info("\t\t" + livro.getSigla());
+        Tiddler tiddlerLivro = new Tiddler(livro.getSigla());
+        tiddlerLivro.setTags("Livro");
+        tiddlerLivro.getCustomProperties().put("sigla", livro.getSigla());
+        tiddlerLivro.getCustomProperties().put("nome", livro.getChapter());
+        tiddlerLivro.getCustomProperties().put("url", biblia.getUrl());
+        tiddlerLivro.getCustomProperties().put("timestamp", biblia.getTimestamp().format(TiddlyWiki.DATE_TIME_FORMATTER_TIDDLYWIKI));
+        tiddlerLivro.setText("! Capítulos");
+        for (Capitulo capitulo : livro.getCapitulos()) {
+            tiddlerLivro.setText(tiddlerLivro.getText() + "\n* [[" + capitulo.getNumero() + "|" + livro.getSigla() + " " + capitulo.getNumero() + "]]");
+            capituloToTiddler(livro, capitulo, tiddlyWiki);
+        }
+        tiddlyWiki.insert(tiddlerLivro);
+    }
 
-    // private void capituloToTiddler(Livro livro, Capitulo capitulo, TiddlyWiki tiddlyWiki) {
-    //     Tiddler tiddlerCapitulo = new Tiddler(livro.getSigla() + " " + capitulo.getNumero());
-    //     tiddlerCapitulo.setTags("Capítulo");
-    //     tiddlerCapitulo.getCustomProperties().put("livro", "[[" + livro.getSigla() + "]]");
-    //     tiddlerCapitulo.getCustomProperties().put("numero", capitulo.getNumero().toString());
-    //     tiddlerCapitulo.getCustomProperties().put("url", capitulo.getUrl());
-    //     tiddlerCapitulo.getCustomProperties().put("timestamp", capitulo.getTimestamp().format(TiddlyWiki.DATE_TIME_FORMATTER_TIDDLYWIKI));
-    //     tiddlerCapitulo.setText("");
-    //     for (String html : capitulo.getHtml()) {
-    //         tiddlerCapitulo.setText(tiddlerCapitulo.getText() + html);
-    //     }
-    //     tiddlyWiki.insert(tiddlerCapitulo);
-    //     versiculosToTiddler(tiddlerCapitulo, tiddlyWiki);
-    // }
+    private void capituloToTiddler(Livro livro, Capitulo capitulo, TiddlyWiki tiddlyWiki) {
+        Tiddler tiddlerCapitulo = new Tiddler(livro.getSigla() + " " + capitulo.getNumero());
+        tiddlerCapitulo.setTags("Capítulo");
+        tiddlerCapitulo.getCustomProperties().put("livro", "[[" + livro.getSigla() + "]]");
+        tiddlerCapitulo.getCustomProperties().put("numero", capitulo.getNumero().toString());
+        tiddlerCapitulo.getCustomProperties().put("url", capitulo.getUrl());
+        tiddlerCapitulo.getCustomProperties().put("timestamp", capitulo.getTimestamp().format(TiddlyWiki.DATE_TIME_FORMATTER_TIDDLYWIKI));
+        tiddlerCapitulo.setText("");
+        for (Versiculo versiculo : capitulo.getVersiculos()) {
+            Tiddler tiddlerVersiculo = versiculoToTiddler(livro, capitulo, versiculo, tiddlyWiki);
+            String numVersiculo = tiddlerVersiculo.getCustomProperties().get("numero");
+            tiddlerCapitulo.setText(tiddlerCapitulo.getText() + "^^" + numVersiculo + "^^{{" + tiddlerVersiculo.getTitle() + "}}" + TiddlyWiki.LINE_BREAK);
+        }
+        tiddlyWiki.insert(tiddlerCapitulo);
+    }
 
-    // private void versiculosToTiddler(Tiddler tiddlerCapitulo, TiddlyWiki tiddlyWiki) {
-    //     log.info("\t\t" + tiddlerCapitulo.getTitle());
-    //     final String LINE_BREAK = "\n";
-    //     String html = tiddlerCapitulo.getText();
-
-    //     // Listas (ul/li) "perdidas" (Ex 24, Lv 4, ...?)
-    //     int pFaltando = 0;
-    //     String find = "</p><ul class=\"wp-block-list\">" + LINE_BREAK + " <li>";
-    //     String repl = " ";
-    //     int lengthBefore = html.length();
-    //     html = html.replace(find, repl);
-    //     int lengthAfter = html.length();
-    //     pFaltando += (lengthBefore - lengthAfter) / (find.length() - repl.length());
-    //     if (lengthBefore != html.length()) { // Só se alterou na linha acima
-    //         find = "</li>" + LINE_BREAK + "</ul><p>";
-    //         repl = " ";
-    //         lengthBefore = html.length();
-    //         html = html.replace(find, repl);
-    //         lengthAfter = html.length();
-    //         pFaltando -= (lengthBefore - lengthAfter) / (find.length() - repl.length());
-    //     }
-    //     find = "<ul class=\"wp-block-list\">" + LINE_BREAK + " <li>";
-    //     repl = "";
-    //     html = html.replace(find, repl);
-    //     find = "</li>" + LINE_BREAK + "</ul>";
-    //     repl = "";
-    //     html = html.replace("</li>" + LINE_BREAK + "</ul>", "");
-    //     if ((pFaltando != 0) && (pFaltando != 1)) {
-    //         throw new RuntimeException("Não sei o que fazer...");
-    //     }
-    //     for (int i = 0; i < pFaltando; i++) {
-    //         html += "</p>";
-    //     }
-
-    //     int pos = 0;
-    //     String htmlFechamento = "";
-    //     String numVersiculo = "";
-    //     int posVersiculoIni = 0;
-    //     while (pos < html.length()) {
-    //         int posElementoIniIni = html.indexOf("<", pos);
-    //         if (posElementoIniIni >= 0) {
-    //             int posElementoIniFim = html.indexOf(">", posElementoIniIni);
-    //             String elementoTag = html.substring(posElementoIniIni + 1, posElementoIniFim).split(" ")[0];
-    //             int posElementoFimIni = html.indexOf("</" + elementoTag + ">", posElementoIniIni);
-    //             int posElementoFimFim = posElementoFimIni + elementoTag.length() + 3;
-    //             if (posElementoFimIni == -1) { // Não achou o fim da tag
-    //                 String fim = html.substring(posElementoIniIni);
-    //                 if ((htmlFechamento.length() > 0) && fim.startsWith(htmlFechamento)) { // Se for o fechamento final
-    //                     posElementoFimIni = posElementoIniIni;
-    //                     posElementoFimFim = posElementoFimIni + htmlFechamento.length();
-    //                     htmlFechamento = "";
-    //                 } else {
-    //                     if (elementoTag.startsWith("/") || "br".equals(elementoTag)) {
-    //                         // É uma tag sem fechamento ou um fechamento em si; ignora, pois vai ser tratado mais à frente.
-    //                     } else {
-    //                         throw new RuntimeException("Não sei o que fazer...");
-    //                     }
-    //                 }
-    //             }
-    //             if (posElementoFimFim == -1) {
-    //                 throw new RuntimeException("Elemento \"" + elementoTag + "\" sem fechamento.");
-    //             }
-    //             if (numVersiculo.length() == 0) { // Está no texto do capítulo, fora de qualquer versículo
-    //                 switch (elementoTag) {
-    //                     case "a": // Links "perdidos" no texto: remove
-    //                         // fall through
-    //                     case "/a": // Links "perdidos" no texto: remove
-    //                         html = html.substring(0, posElementoIniIni) + html.substring(posElementoIniFim + 1);
-    //                         break;
-
-    //                     case "em": // É uma ênfase; deixa no capítulo e continua
-    //                         // fall through
-    //                     case "ol": // É um título; deixa no capítulo e continua
-    //                         // fall through
-    //                     case "strong": // É um subtítulo; deixa no capítulo e continua
-    //                         pos = posElementoFimFim;
-    //                         break;
-
-    //                     case "figure": // ???; remove do início ao fim
-    //                         html = html.substring(0, posElementoIniIni) + html.substring(posElementoFimFim);
-    //                         break;
-
-    //                     case "p": // Esse elemento vai até o final do html; tem que tratar dentro dele
-    //                         htmlFechamento = "</" + elementoTag + ">" + htmlFechamento;
-    //                         pos = posElementoIniFim;
-    //                         break;
-
-    //                     case "/p": // Já foi feito o fechamento anteriormente; só ignora
-    //                         pos = posElementoIniFim;
-    //                         break;
-
-    //                     case "sup": // É o início de um versículo; marca início de versículo e continua, mantendo a tag
-    //                         // Marca início de versículo
-    //                         numVersiculo = html.substring(posElementoIniFim + 1, posElementoFimIni);
-    //                         posVersiculoIni = posElementoFimFim;
-    //                         pos = posVersiculoIni;
-    //                         break;
-
-    //                     default:
-    //                         throw new RuntimeException("Elemento \"" + elementoTag + "\" desconhecido.");
-    //                 }
-    //             } else { // Está no meio de um versículo
-    //                 switch (elementoTag) {
-    //                     case "a": // Links "perdidos" no texto: remove
-    //                         // fall through
-    //                     case "/a": // Links "perdidos" no texto: remove
-    //                         // fall through
-    //                     case "br": // Quebras de linha: remove
-    //                         html = html.substring(0, posElementoIniIni) + html.substring(posElementoIniFim + 1);
-    //                         break;
-
-                            
-    //                     case "em": // É uma ênfase; continua
-    //                         pos = posElementoFimFim;
-    //                         break;
-
-    //                     case "/p": // Fim do capítulo
-    //                         // fall through
-    //                     case "sup": // É o início de um novo versículo
-    //                         // Adiciona o que estava desde o último <sup> até chegar aqui
-    //                         String tiddlerText = html.substring(posVersiculoIni, posElementoIniIni);
-    //                         Tiddler tiddlerVersiculo = new Tiddler(tiddlerCapitulo.getTitle() + "," + numVersiculo);
-    //                         tiddlerVersiculo.setTags("Versículo");
-    //                         tiddlerVersiculo.getCustomProperties().put("livro", tiddlerCapitulo.getCustomProperties().get("livro"));
-    //                         tiddlerVersiculo.getCustomProperties().put("capitulo", tiddlerCapitulo.getCustomProperties().get("numero"));
-    //                         tiddlerVersiculo.getCustomProperties().put("numero", numVersiculo);
-    //                         tiddlerVersiculo.getCustomProperties().put("url", tiddlerCapitulo.getCustomProperties().get("url"));
-    //                         tiddlerVersiculo.getCustomProperties().put("timestamp", tiddlerCapitulo.getCustomProperties().get("timestamp"));
-    //                         tiddlerVersiculo.setText(tiddlerText);
-    //                         try {
-    //                             tiddlyWiki.insert(tiddlerVersiculo);
-    //                         } catch (TiddlyWikiException e) {
-    //                             if (e.getMessage().startsWith("Tentativa de incluir tiddler duplicada: ")) {
-    //                                 tiddlerVersiculo.getCustomProperties().put("versiculo", tiddlerVersiculo.getTitle());
-    //                                 tiddlerVersiculo.setTitle(tiddlerVersiculo.getTitle() + " " + UUID.randomUUID());
-    //                                 tiddlerVersiculo.setTags(tiddlerVersiculo.getTags() + " TiddlyWikiException");
-    //                                 tiddlyWiki.insert(tiddlerVersiculo);
-    //                             } else {
-    //                                 throw e;
-    //                             }
-    //                         }
-    //                         // Substitui o texto do versículo por um transclusion
-    //                         String transclusion = "{{" + tiddlerVersiculo.getTitle() + "}}";
-    //                         html = html.substring(0, posVersiculoIni) + transclusion + html.substring(posElementoIniIni);
-    //                         // Marca início de versículo
-    //                         int posDif = transclusion.length() - tiddlerText.length();
-    //                         if ("/p".equals(elementoTag)) {
-    //                             numVersiculo = "";
-    //                         } else {
-    //                             numVersiculo = html.substring(posElementoIniFim + posDif + 1, posElementoFimIni + posDif);
-    //                         }
-    //                         posVersiculoIni = posElementoFimFim + posDif;
-    //                         pos = posVersiculoIni;
-    //                         break;
-
-    //                     case "strong": // É um negrito; continua
-    //                         pos = posElementoFimFim;
-    //                         break;
-
-    //                     default:
-    //                         throw new RuntimeException("Elemento \"" + elementoTag + "\" desconhecido.");
-    //                 }
-    //             }
-    //         } else {
-    //             pos = html.length();
-    //         }
-    //     }
-    //     // Adiciona links para os versículos
-    //     html = html.replaceAll("<sup>(.+?)<\\/sup>\\{\\{(.+?)\\}\\}", "<sup>[[$1|$2]]<\\/sup>{{$2}}");
-    //     tiddlerCapitulo.setText(html);
-    // }
+    private Tiddler versiculoToTiddler(Livro livro, Capitulo capitulo, Versiculo versiculo, TiddlyWiki tiddlyWiki) {
+        String livroCapitulo = livro.getSigla() + " " + capitulo.getNumero();
+        String numVersiculo = versiculo.getNumber();
+        // Fix: 2Rs 3,9 vem numerado como 2Rs 3,10
+        if ("2Rs 3".equals(livroCapitulo) && "10".equals(numVersiculo) && versiculo.getText().matches(".+marcha.+")) {
+            numVersiculo = "9";
+        }
+        // Fix: At 5,1 vem numerado como At 5,2
+        if ("At 5".equals(livroCapitulo) && "2".equals(numVersiculo) && versiculo.getText().matches(".+Ananias.+")) {
+            numVersiculo = "1";
+        }
+        Tiddler tiddlerVersiculo = new Tiddler(livroCapitulo + "," + numVersiculo);
+        tiddlerVersiculo.setTags("Versículo");
+        tiddlerVersiculo.getCustomProperties().put("livro", "[[" + livro.getSigla() + "]]");
+        tiddlerVersiculo.getCustomProperties().put("capitulo", capitulo.getNumero().toString());
+        tiddlerVersiculo.getCustomProperties().put("numero", numVersiculo);
+        tiddlerVersiculo.getCustomProperties().put("url", capitulo.getUrl());
+        tiddlerVersiculo.getCustomProperties().put("timestamp", capitulo.getTimestamp().format(TiddlyWiki.DATE_TIME_FORMATTER_TIDDLYWIKI));
+        tiddlerVersiculo.setText(versiculo.getText());
+        tiddlyWiki.insert(tiddlerVersiculo);
+        return tiddlerVersiculo;
+    }
 }
