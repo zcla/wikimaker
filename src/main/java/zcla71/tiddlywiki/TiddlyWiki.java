@@ -93,7 +93,7 @@ public class TiddlyWiki {
     public void insert(Tiddler tiddler) {
         Tiddler existing = getByTitle(tiddler.getTitle());
         if (existing != null) {
-            throw new TiddlyWikiException("Tentativa de incluir tiddler duplicada: " + tiddler.getTitle());
+            throw new TiddlerDuplicadaException(tiddler.getTitle());
         }
         tiddler.setCreated(LocalDateTime.now());
         tiddler.setModified(LocalDateTime.now());
