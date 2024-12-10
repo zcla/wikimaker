@@ -20,14 +20,15 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import lombok.extern.slf4j.Slf4j;
-import zcla71.tiddlywiki.Tiddler;
 import zcla71.tiddlywiki.TiddlyWiki;
+import zcla71.wikimaker.wiki.biblia.TiddlerBiblia;
+import zcla71.wikimaker.wiki.biblia.TiddlerCapitulo;
+import zcla71.wikimaker.wiki.biblia.TiddlerLivro;
+import zcla71.wikimaker.wiki.biblia.TiddlerVersiculo;
+import zcla71.wikimaker.wiki.biblia.WikiBiblia;
 
 @Slf4j
 public class BibliaParresiaComBible {
-public static void main(String[] args) throws StreamReadException, DatabindException, IOException, URISyntaxException {
-new BibliaParresiaComBible();
-}
     private static final String ID = "biblia_parresia_com_bible";
     private static final String NOME = "Bíblia Ave-Maria";
     private static final String SITE_URL = "https://claretianos.com.br/biblia-ave-maria-online/";
@@ -107,7 +108,6 @@ new BibliaParresiaComBible();
             Map.entry("iii-sao-joao", "3Jo"),
             Map.entry("sao-judas", "Jd"),
             Map.entry("apocalipse", "Ap"));
-    private static final String WIKI_EMPTY_FILE = "./data/tiddlywiki_empty.html";
     private static final String WIKI_OUTPUT_FILE = "./data/" + ID + ".html";
 
     public BibliaParresiaComBible() throws StreamReadException, DatabindException, IOException, URISyntaxException {
@@ -136,12 +136,9 @@ new BibliaParresiaComBible();
             return;
         }
 
-        File wikiEmptyFile = new File(WIKI_EMPTY_FILE);
-        if (!wikiEmptyFile.exists()) {
-            log.error("\tWiki vazio não encontrado.");
-            return;
-        }
-        makeWiki(biblia, wikiEmptyFile, wikiOutputFile);
+        WikiBiblia wiki = makeWiki(biblia);
+        log.info("\tSalvando wiki");
+        wiki.save(wikiOutputFile);
     }
 
     private Biblia downloadBiblia(ObjectMapper objectMapper, File jsonDownloadFile) throws URISyntaxException, StreamReadException, DatabindException, IOException {
@@ -174,67 +171,75 @@ new BibliaParresiaComBible();
         return result;
     }
 
-    private void makeWiki(Biblia biblia, File wikiEmptyFile, File wikiOutputFile) throws IOException {
-        log.info("\tMaking wiki");
+    private WikiBiblia makeWiki(Biblia biblia) throws IOException {
+        log.info("\tGerando wiki");
         DateTimeFormatter dtfHuman = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
-        TiddlyWiki tiddlyWiki = new TiddlyWiki(wikiEmptyFile);
-        tiddlyWiki.setSiteTitle(biblia.getNome());
-        tiddlyWiki.setSiteSubtitle("Importada [[daqui|" + biblia.getUrlSite() + "]] em " + biblia.getTimestamp().format(dtfHuman) + ".");
+        WikiBiblia wiki = new WikiBiblia(
+                biblia.getNome(),
+                "Importada [[daqui|" + biblia.getUrlSite() + "]] em " + biblia.getTimestamp().format(dtfHuman) + "."
+        );
 
         // Bíblia
-        bibliaToTiddler(biblia, tiddlyWiki);
+        bibliaToTiddler(biblia, wiki);
 
-        tiddlyWiki.save(wikiOutputFile);
+        return wiki;
     }
 
-    private void bibliaToTiddler(Biblia biblia, TiddlyWiki tiddlyWiki) {
-        Tiddler tiddlerBiblia = new Tiddler("Bíblia");
-        tiddlerBiblia.getCustomProperties().put("nome", biblia.getNome());
-        tiddlerBiblia.getCustomProperties().put("url", biblia.getUrl());
-        tiddlerBiblia.getCustomProperties().put("timestamp", biblia.getTimestamp().format(TiddlyWiki.DATE_TIME_FORMATTER_TIDDLYWIKI));
-        tiddlerBiblia.setText("! Livros");
+    private String bibliaToTiddler(Biblia biblia, WikiBiblia wiki) {
+        StringBuilder sbTexto = new StringBuilder("! Livros");
         for (Livro livro : biblia.getLivros()) {
-            tiddlerBiblia.setText(tiddlerBiblia.getText() + "\n* [[" + livro.getChapter() + "|" + livro.getSigla() + "]]");
-            livroToTiddler(biblia, livro, tiddlyWiki);
+            String title = livroToTiddler(biblia, livro, wiki);
+            sbTexto.append("\n* [[" + livro.getChapter() + "|" + title + "]]");
         }
-        tiddlyWiki.insert(tiddlerBiblia);
-        tiddlyWiki.setDefaultTiddlers(tiddlerBiblia.getTitle());
+
+        TiddlerBiblia tiddlerBiblia = new TiddlerBiblia(
+            biblia.getNome(),
+            biblia.getUrl(),
+            biblia.getTimestamp(),
+            sbTexto.toString()
+        );
+        return wiki.setBiblia(tiddlerBiblia);
     }
 
-    private void livroToTiddler(Biblia biblia, Livro livro, TiddlyWiki tiddlyWiki) {
+    private String livroToTiddler(Biblia biblia, Livro livro, WikiBiblia wiki) {
         log.info("\t\t" + livro.getSigla());
-        Tiddler tiddlerLivro = new Tiddler(livro.getSigla());
-        tiddlerLivro.setTags("Livro");
-        tiddlerLivro.getCustomProperties().put("sigla", livro.getSigla());
-        tiddlerLivro.getCustomProperties().put("nome", livro.getChapter());
-        tiddlerLivro.getCustomProperties().put("url", biblia.getUrl());
-        tiddlerLivro.getCustomProperties().put("timestamp", biblia.getTimestamp().format(TiddlyWiki.DATE_TIME_FORMATTER_TIDDLYWIKI));
-        tiddlerLivro.setText("! Capítulos");
+
+        StringBuilder sbTexto = new StringBuilder("! Capítulos");
         for (Capitulo capitulo : livro.getCapitulos()) {
-            tiddlerLivro.setText(tiddlerLivro.getText() + "\n* [[" + capitulo.getNumero() + "|" + livro.getSigla() + " " + capitulo.getNumero() + "]]");
-            capituloToTiddler(livro, capitulo, tiddlyWiki);
+            String title = capituloToTiddler(livro, capitulo, wiki);
+            sbTexto.append("\n* [[" + capitulo.getNumero() + "|" + title + "]]");
         }
-        tiddlyWiki.insert(tiddlerLivro);
+
+        TiddlerLivro tiddlerLivro = new TiddlerLivro(
+            livro.getSigla(),
+            livro.getChapter(),
+            biblia.getUrl(),
+            biblia.getTimestamp(),
+            sbTexto.toString()
+        );
+        return wiki.addLivro(tiddlerLivro);
     }
 
-    private void capituloToTiddler(Livro livro, Capitulo capitulo, TiddlyWiki tiddlyWiki) {
-        Tiddler tiddlerCapitulo = new Tiddler(livro.getSigla() + " " + capitulo.getNumero());
-        tiddlerCapitulo.setTags("Capítulo");
-        tiddlerCapitulo.getCustomProperties().put("livro", "[[" + livro.getSigla() + "]]");
-        tiddlerCapitulo.getCustomProperties().put("numero", capitulo.getNumero().toString());
-        tiddlerCapitulo.getCustomProperties().put("url", capitulo.getUrl());
-        tiddlerCapitulo.getCustomProperties().put("timestamp", capitulo.getTimestamp().format(TiddlyWiki.DATE_TIME_FORMATTER_TIDDLYWIKI));
-        tiddlerCapitulo.setText("");
+    private String capituloToTiddler(Livro livro, Capitulo capitulo, WikiBiblia wiki) {
+        StringBuilder sbTexto = new StringBuilder();
+
         for (Versiculo versiculo : capitulo.getVersiculos()) {
-            Tiddler tiddlerVersiculo = versiculoToTiddler(livro, capitulo, versiculo, tiddlyWiki);
-            String numVersiculo = tiddlerVersiculo.getCustomProperties().get("numero");
-            tiddlerCapitulo.setText(tiddlerCapitulo.getText() + "^^" + numVersiculo + "^^{{" + tiddlerVersiculo.getTitle() + "}}" + TiddlyWiki.LINE_BREAK);
+            String title = versiculoToTiddler(livro, capitulo, versiculo, wiki);
+            sbTexto.append("^^[[" + versiculo.getNumber() + "|" + title + "]]^^{{" + title + "}}" + TiddlyWiki.LINE_BREAK);
         }
-        tiddlyWiki.insert(tiddlerCapitulo);
+
+        TiddlerCapitulo tiddlerCapitulo = new TiddlerCapitulo(
+            livro.getSigla(),
+            capitulo.getNumero().toString(),
+            capitulo.getUrl(),
+            capitulo.getTimestamp(),
+            sbTexto.toString()
+        );
+        return wiki.addCapitulo(tiddlerCapitulo);
     }
 
-    private Tiddler versiculoToTiddler(Livro livro, Capitulo capitulo, Versiculo versiculo, TiddlyWiki tiddlyWiki) {
+    private String versiculoToTiddler(Livro livro, Capitulo capitulo, Versiculo versiculo, WikiBiblia wiki) {
         String livroCapitulo = livro.getSigla() + " " + capitulo.getNumero();
         String numVersiculo = versiculo.getNumber();
         // Fix: 2Rs 3,9 vem numerado como 2Rs 3,10
@@ -245,15 +250,15 @@ new BibliaParresiaComBible();
         if ("At 5".equals(livroCapitulo) && "2".equals(numVersiculo) && versiculo.getText().matches(".+Ananias.+")) {
             numVersiculo = "1";
         }
-        Tiddler tiddlerVersiculo = new Tiddler(livroCapitulo + "," + numVersiculo);
-        tiddlerVersiculo.setTags("Versículo");
-        tiddlerVersiculo.getCustomProperties().put("livro", "[[" + livro.getSigla() + "]]");
-        tiddlerVersiculo.getCustomProperties().put("capitulo", capitulo.getNumero().toString());
-        tiddlerVersiculo.getCustomProperties().put("numero", numVersiculo);
-        tiddlerVersiculo.getCustomProperties().put("url", capitulo.getUrl());
-        tiddlerVersiculo.getCustomProperties().put("timestamp", capitulo.getTimestamp().format(TiddlyWiki.DATE_TIME_FORMATTER_TIDDLYWIKI));
-        tiddlerVersiculo.setText(versiculo.getText());
-        tiddlyWiki.insert(tiddlerVersiculo);
-        return tiddlerVersiculo;
+
+        TiddlerVersiculo tiddlerVersiculo = new TiddlerVersiculo(
+            livro.getSigla(),
+            capitulo.getNumero().toString(),
+            numVersiculo,
+            capitulo.getUrl(),
+            capitulo.getTimestamp(),
+            versiculo.getText()
+        );
+        return wiki.addVersiculo(tiddlerVersiculo);
     }
 }

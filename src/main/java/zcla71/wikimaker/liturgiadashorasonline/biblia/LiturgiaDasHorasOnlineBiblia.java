@@ -245,39 +245,42 @@ public class LiturgiaDasHorasOnlineBiblia {
         log.info("\tGerando wiki");
         DateTimeFormatter dtfHuman = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
-        WikiBiblia result = new WikiBiblia(
+        WikiBiblia wiki = new WikiBiblia(
                 biblia.getNome(),
                 "Importada [[daqui|" + biblia.getUrl() + "]] em " + biblia.getTimestamp().format(dtfHuman) + "."
         );
 
         // Bíblia
-        bibliaToTiddler(biblia, result);
+        bibliaToTiddler(biblia, wiki);
 
-        return result;
+        return wiki;
     }
 
-    private void bibliaToTiddler(Biblia biblia, WikiBiblia wiki) {
+    private String bibliaToTiddler(Biblia biblia, WikiBiblia wiki) {
         StringBuilder sbTexto = new StringBuilder("! Livros");
         for (Livro livro : biblia.getLivros()) {
             String title = livroToTiddler(livro, wiki);
             sbTexto.append("\n* [[" + livro.getNome() + "|" + title + "]]");
         }
+
         TiddlerBiblia tiddlerBiblia = new TiddlerBiblia(
             biblia.getNome(),
             biblia.getUrl(),
             biblia.getTimestamp(),
             sbTexto.toString()
         );
-        wiki.setBiblia(tiddlerBiblia);
+        return wiki.setBiblia(tiddlerBiblia);
     }
 
     private String livroToTiddler(Livro livro, WikiBiblia wiki) {
         log.info("\t\t" + livro.getSigla());
+
         StringBuilder sbTexto = new StringBuilder("! Capítulos");
         for (Capitulo capitulo : livro.getCapitulos()) {
             String title = capituloToTiddler(livro, capitulo, wiki);
             sbTexto.append("\n* [[" + capitulo.getNumero() + "|" + title + "]]");
         }
+
         TiddlerLivro tiddlerLivro = new TiddlerLivro(
             livro.getSigla(),
             livro.getNome(),
@@ -290,10 +293,12 @@ public class LiturgiaDasHorasOnlineBiblia {
 
     private String capituloToTiddler(Livro livro, Capitulo capitulo, WikiBiblia wiki) {
         log.info("\t\t\t" + capitulo.getNumero());
+
         StringBuilder sbTexto = new StringBuilder();
         for (String html : capitulo.getHtml()) {
             sbTexto.append(html);
         }
+
         TiddlerCapitulo tiddlerCapitulo = new TiddlerCapitulo(
             livro.getSigla(),
             capitulo.getNumero().toString(),
