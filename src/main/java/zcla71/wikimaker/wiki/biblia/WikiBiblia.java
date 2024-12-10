@@ -48,14 +48,14 @@ public class WikiBiblia {
     }
 
     public String setBiblia(TiddlerBiblia biblia) {
-        String title = biblia.getTitle();
+        String title = fixTitle(biblia.getTitle());
         this.biblia = biblia;
         this.tiddlerMap.put(title, biblia);
         return title;
     }
 
     public String addLivro(TiddlerLivro livro) {
-        String title = livro.getTitle();
+        String title = fixTitle(livro.getTitle());
         if (this.tiddlerMap.get(title) != null) {
             title += "/" + UUID.randomUUID().toString();
         }
@@ -65,7 +65,7 @@ public class WikiBiblia {
     }
 
     public String addCapitulo(TiddlerCapitulo capitulo) {
-        String title = capitulo.getTitle();
+        String title = fixTitle(capitulo.getTitle());
         if (this.tiddlerMap.get(title) != null) {
             title += "/" + UUID.randomUUID().toString();
         }
@@ -75,13 +75,24 @@ public class WikiBiblia {
     }
 
     public String addVersiculo(TiddlerVersiculo versiculo) {
-        String title = versiculo.getTitle();
+        String title = fixTitle(versiculo.getTitle());
         if (this.tiddlerMap.get(title) != null) {
             title += "/" + UUID.randomUUID().toString();
         }
         this.versiculos.add(versiculo);
         this.tiddlerMap.put(title, versiculo);
         return title;
+    }
+
+    private String fixTitle(String title) {
+        // "Warning: avoid using any of the characters | [ ] { } in tiddler titles"
+        String result = title;
+        result = result.replaceAll("\\|", "&vert;"); // | &vert; &#x7c;
+        result = result.replaceAll("\\[", "&lbrack;"); // [ &lbrack; &#x5b;
+        result = result.replaceAll("\\]", "&rbrack;"); // ] &rbrack; &#x5d;
+        result = result.replaceAll("\\{", "&lbrace;"); // { &lbrace; &#x7b;
+        result = result.replaceAll("\\}", "&rbrace;"); // } &rbrace; &#x7d;
+        return result;
     }
 
     public void save(File wikiOutputFile) throws IOException {
