@@ -130,10 +130,10 @@ public class A12ComBiblia {
         }
 
         File wikiOutputFile = new File(WIKI_OUTPUT_FILE);
-        // if (wikiOutputFile.exists()) {
-        //     log.info("\tWiki já gerado.");
-        //     return;
-        // }
+        if (wikiOutputFile.exists()) {
+            log.info("\tWiki já gerado.");
+            return;
+        }
 
         WikiBiblia wiki = makeWiki(biblia);
         log.info("\tSalvando wiki");
