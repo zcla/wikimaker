@@ -1,0 +1,13 @@
+POST https://www.a12.com/bible-api/get_books
+content-type: application/json;charset=UTF-8
+
+###
+
+POST https://www.a12.com/bible-api/get_versicles
+content-type: application/json;charset=UTF-8
+
+{
+//    "new_testament_slug": "antigo-testamento",
+    "book_slug": "genesis",
+    "chapter_order": "1"
+}

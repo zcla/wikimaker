@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import zcla71.wikimaker.a12com.biblia.A12ComBiblia;
 import zcla71.wikimaker.bibliaparresiacom.bible.BibliaParresiaComBible;
 import zcla71.wikimaker.liturgiadashorasonline.biblia.LiturgiaDasHorasOnlineBiblia;
 
@@ -13,6 +14,7 @@ import zcla71.wikimaker.liturgiadashorasonline.biblia.LiturgiaDasHorasOnlineBibl
 public class App {
 	public static void main(String[] args) throws IOException, ClassNotFoundException, URISyntaxException {
 		// Bíblias
+		new A12ComBiblia();
 		new BibliaParresiaComBible();
 		new LiturgiaDasHorasOnlineBiblia();
 		// vatican.va https://www.vatican.va/archive/bible/index_po.htm
@@ -21,8 +23,6 @@ public class App {
 		//   [es] https://www.vatican.va/archive/ESL0506/_INDEX.HTM
 		//   [it] https://www.vatican.va/archive/ITA0001/_INDEX.HTM
 		//   [lt] https://www.vatican.va/archive/bible/nova_vulgata/documents/nova-vulgata_index_lt.html
-		// a12.com
-		//   [pt] https://www.a12.com/biblia Bíblia de Aparecida (TEM API)
 		// bibliacatolica.com.br
 		//   [vários]
 		//   [pt] https://www.bibliacatolica.com.br/biblia-ave-maria/genesis/1/ Ave Maria
@@ -34,6 +34,8 @@ public class App {
 		//   [fr] https://www.clerus.org/bibliaclerusonline/fr/66c.htm
 		//   [it] https://www.clerus.org/bibliaclerusonline/it/66c.htm
 		//   [pt] https://www.clerus.org/bibliaclerusonline/pt/66c.htm
+		// die-bibel.de
+		//   [el] https://www.die-bibel.de/en/bible/NA28/
 		// intratext.com
 		//   [várias] https://www.intratext.com/BIBLE/default.htm
 		//   [pt] https://www.intratext.com/IXT/POR0013/__P1.HTM "A Bíblia" - parece muito fácil de baixar
