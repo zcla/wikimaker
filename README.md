@@ -16,6 +16,10 @@ Criando tiddlywikis a partir de dados encontrados na internet
   * [pt] https://www.ph4.org/_dl.php?back=bbl&a=BEP&b=mybible&c Bíblia Sagrada — Edição Pastoral 1990
   * [pt] https://www.ph4.org/_dl.php?back=bbl&a=BAM&b=mybible&c Bíblia Ave Maria 1959
 
+* github.com/Bible-Projects - várias versões no formato MyBible
+  * `mybible` [pt] https://github.com/Bible-Projects/believers-sword-next/raw/refs/heads/main/Modules/Bible/B%C3%ADblia%20Ave-Maria%201959.SQLite3 Ave-Maria
+  * `mybible` [pt] https://github.com/Bible-Projects/believers-sword-next/raw/refs/heads/main/Modules/Bible/B%C3%ADblia%20Padre%20Matos%20Soares%201950.SQLite3 Matos Soares
+
 * tuapalavra.com.br - CNBB antiga (1987?); talvez o código sirva para todas as outras dezenas de bíblias que há no mesmo site. Não consegui encontrar os deuterocanônicos.
   * [pt] https://amp.tuapalavra.com.br/pt-BR/CNBB
 
@@ -68,6 +72,13 @@ Criando tiddlywikis a partir de dados encontrados na internet
 
 * die-bibel.de
   * [el] https://www.die-bibel.de/en/bible/NA28/
+
+* github.com/Bible-Projects - várias bíblias no formato MyBible
+  * `mybible` [várias] https://github.com/Bible-Projects/believers-sword-next/tree/main/Modules/Bible - texto
+  * `mybible` [várias] https://github.com/Bible-Projects/believers-sword-next/tree/main/Modules/Commentaries - comentários
+
+* github.com/Dancrf - Matos Soares em formato JSON
+  * `json` [pt] https://github.com/Dancrf/biblia-db/raw/refs/heads/main/biblia.json
 
 * github.com/scrollmapper - dezenas de versões em dezenas de línguas; não sei se há católicas.
   * `json` [várias] https://github.com/scrollmapper/bible_databases/tree/master/sources
