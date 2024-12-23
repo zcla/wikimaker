@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.exc.StreamWriteException;
 import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
@@ -135,6 +136,7 @@ public class MyBible {
 
     private void save(File file) throws StreamWriteException, DatabindException, IOException {
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setSerializationInclusion(Include.NON_NULL);
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         DefaultPrettyPrinter prettyPrinter = new DefaultPrettyPrinter();
         prettyPrinter.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE);
@@ -198,7 +200,7 @@ public class MyBible {
                                 break;
 
                             default:
-                                log.error("*** Tabela desconhecida: " + tableName);
+                                log.warn("*** Tabela desconhecida: " + tableName);
                                 break;
                         }
                     }
@@ -233,7 +235,7 @@ public class MyBible {
                                 break;
 
                             default:
-                                log.error("*** Tabela desconhecida: " + tableName);
+                                log.warn("*** Tabela desconhecida: " + tableName);
                                 break;
                         }
                     }
