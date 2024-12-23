@@ -9,13 +9,6 @@ Criando tiddlywikis a partir de dados encontrados na internet
 
 ## Próximas
 
-* ph4.org
-  * [pt] https://www.ph4.org/_dl.php?back=bbl&a=BJRD&b=mybible&c Bíblia de Jerusalém 2002
-  * [pt] https://www.ph4.org/_dl.php?back=bbl&a=BPT%2709D&b=mybible&c a BÍBLIA para todos Edição Católica
-  * [pt] https://www.ph4.org/_dl.php?back=bbl&a=CNBB&b=mybible&c Bíblia CNBB (Nova Capa) 2002
-  * [pt] https://www.ph4.org/_dl.php?back=bbl&a=BEP&b=mybible&c Bíblia Sagrada — Edição Pastoral 1990
-  * [pt] https://www.ph4.org/_dl.php?back=bbl&a=BAM&b=mybible&c Bíblia Ave Maria 1959
-
 * github.com/Bible-Projects - várias versões no formato MyBible
   * `mybible` [pt] https://github.com/Bible-Projects/believers-sword-next/raw/refs/heads/main/Modules/Bible/B%C3%ADblia%20Ave-Maria%201959.SQLite3 Ave-Maria
   * `mybible` [pt] https://github.com/Bible-Projects/believers-sword-next/raw/refs/heads/main/Modules/Bible/B%C3%ADblia%20Padre%20Matos%20Soares%201950.SQLite3 Matos Soares
