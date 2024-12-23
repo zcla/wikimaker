@@ -12,6 +12,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 
+// Ferramenta para abrir arquivos .SQLite3 online: https://sqliteviewer.app/
 public class SQLiteDb {
     private String path;
 
@@ -47,7 +48,37 @@ public class SQLiteDb {
                     Object value = rs.getObject(colName);
                     Field field = classe.getDeclaredField(colName);
                     field.setAccessible(true);
-                    field.set(object, value);
+                    try {
+                        field.set(object, value);
+                    } catch (IllegalArgumentException e) {
+                        boolean tratado = false;
+                        // Boolean
+                        if (field.getType().equals(Boolean.class)) {
+                            // Converte de Integer
+                            if (value instanceof Integer iValue) {
+                                value = !iValue.equals(0);
+                                field.set(object, value);
+                                tratado = true;
+                            }
+                        }
+                        // Integer
+                        if (field.getType().equals(Integer.class)) {
+                            // Converte de String
+                            if (value instanceof String sValue) {
+                                if (sValue.length() == 0) {
+                                    value = null;
+                                } else {
+                                    value = Integer.parseInt(sValue);
+                                }
+                                field.set(object, value);
+                                tratado = true;
+                            }
+                        }
+                        // Se não conseguiu, relança o erro
+                        if (!tratado) {
+                            throw e;
+                        }
+                    }
                 }
                 result.add(object);
             }

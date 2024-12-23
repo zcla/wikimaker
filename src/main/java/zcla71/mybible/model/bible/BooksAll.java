@@ -16,7 +16,7 @@ public class BooksAll {
     // long_name TEXT,
     private String long_name;
     // is_present BOOLEAN,
-    private Integer is_present; // Can not set java.lang.Boolean field zcla71.mybible.model.bible.BooksAll.is_present to java.lang.Integer
+    private Boolean is_present;
     // sorting_order NUMERIC
     private Integer sorting_order;
     // )

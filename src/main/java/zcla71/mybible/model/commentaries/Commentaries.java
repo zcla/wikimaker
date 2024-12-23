@@ -16,7 +16,7 @@ public class Commentaries {
     // verse_number_to NUMERIC,
     private Integer verse_number_to;
     // is_preceding NUMERIC,
-    private String is_preceding; // Can not set java.lang.Integer field zcla71.mybible.model.commentaries.Commentaries.is_preceding to java.lang.String
+    private Integer is_preceding;
     // marker TEXT,
     private String marker;
     // text TEXT
