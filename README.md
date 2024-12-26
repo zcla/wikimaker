@@ -6,6 +6,11 @@ Criando tiddlywikis a partir de dados encontrados na internet
 * [`a12_com_biblia`](https://www.a12.com/biblia) Bíblia de Aparecida
 * [`biblia_parresia_com_bible`](https://claretianos.com.br/biblia-ave-maria-online/) Bíblia Ave-Maria
 * [`liturgiadashoras_online_biblia`](https://liturgiadashoras.online/biblia/biblia-jerusalem/) Bíblia de Jerusalém
+* [`ph4_org_BAM`](https://www.ph4.org/_dl.php?back=bbl&a=BAM&b=mybible&c) Bíblia Ave Maria
+* [`ph4_org_BEP`](https://www.ph4.org/_dl.php?back=bbl&a=BEP&b=mybible&c) Bíblia Sagrada Edição Pastoral 1990
+* [`ph4_org_BJRD`](https://www.ph4.org/_dl.php?back=bbl&a=BJRD&b=mybible&c) Bíblia de Jerusalém 2002
+* [`ph4_org_BPT_09D`](https://www.ph4.org/_dl.php?back=bbl&a=BPT%2709D&b=mybible&c) A Bíblia para todos Edição Católica (Portugal)
+* [`ph4_org_CNBB`](https://www.ph4.org/_dl.php?back=bbl&a=CNBB&b=mybible&c) Bíblia CNBB 2002
 
 ## Próximas
 
