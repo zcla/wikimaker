@@ -11,6 +11,7 @@ Criando tiddlywikis a partir de dados encontrados na internet
 * [`ph4_org_BJRD`](https://www.ph4.org/_dl.php?back=bbl&a=BJRD&b=mybible&c) Bíblia de Jerusalém 2002
 * [`ph4_org_BPT_09D`](https://www.ph4.org/_dl.php?back=bbl&a=BPT%2709D&b=mybible&c) A Bíblia para todos Edição Católica (Portugal)
 * [`ph4_org_CNBB`](https://www.ph4.org/_dl.php?back=bbl&a=CNBB&b=mybible&c) Bíblia CNBB 2002
+* [`vatican_va_bible_nova_vulgata_lt`](https://www.vatican.va/archive/bible/nova_vulgata/documents/nova-vulgata_index_lt.html) Nova Vulgata (Vaticano)
 
 ## Próximas
 
@@ -48,7 +49,6 @@ Criando tiddlywikis a partir de dados encontrados na internet
   * [en] https://www.vatican.va/archive/ENG0839/_INDEX.HTM
   * [es] https://www.vatican.va/archive/ESL0506/_INDEX.HTM
   * [it] https://www.vatican.va/archive/ITA0001/_INDEX.HTM
-  * [lt] https://www.vatican.va/archive/bible/nova_vulgata/documents/nova-vulgata_index_lt.html
 
 * biblegateway.com
   * [en] https://www.biblegateway.com/passage/?search=Genesis%201&version=NCB (New Catholic Bible)
