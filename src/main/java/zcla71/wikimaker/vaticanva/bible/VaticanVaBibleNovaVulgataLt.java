@@ -33,9 +33,6 @@ import zcla71.wikimaker.wiki.biblia.WikiBiblia;
 
 @Slf4j
 public class VaticanVaBibleNovaVulgataLt {
-public static void main(String[] args) throws StreamReadException, DatabindException, IOException {
-new VaticanVaBibleNovaVulgataLt();
-}
     private static final String ID = "vatican_va_bible_nova_vulgata_lt";
     private static final String NOME = "Nova Vulgata";
     private static final String BASE_URL = "https://www.vatican.va";
