@@ -1,0 +1,50 @@
+### https://biblia.paulus.com.br/biblia-pastoral
+GET https://biblia.paulus.com.br/api/v1/testaments
+# https://biblia.paulus.com.br/api/v1/testaments?bible=biblia-pastoral => Retorna exatamente o mesmo resultado que /testaments.
+# https://biblia.paulus.com.br/api/v1/books => Mais fácil de tratar, mas não há nada aqui que não esteja em /testaments.
+
+
+
+### https://biblia.paulus.com.br/biblia-pastoral/antigo-testamento
+# https://biblia.paulus.com.br/api/v1/testaments/antigo-testamento => Tudo o que está aqui já está em /testaments.
+
+
+
+#@book=pentateuco
+@book=genesis
+### https://biblia.paulus.com.br/biblia-pastoral/antigo-testamento/pentateuco
+GET https://biblia.paulus.com.br/api/v1/books/{{book}}/childrens-books-or-chapters
+# Acrescentar "?isBookGroup=true" omite a propriedade "introduction" de cada um dos "childrens" (sic).
+###
+# https://biblia.paulus.com.br/api/v1/links/get-prev-next?currentChapter=0&currentBookName={{book}} => Relevante para interface, mas inútil aqui.
+# https://biblia.paulus.com.br/api/v1/chapters/list?book={{book}} => Não há nada aqui que não esteja em /books/{{book}}/childrens-books-or-chapters
+# https://biblia.paulus.com.br/api/v1/books/has-introduction?book={{book}} => Não encontrei utilidade.
+
+
+
+@testament=antigo-testamento
+@group=pentateuco
+@chapter=2
+### https://biblia.paulus.com.br/biblia-pastoral/antigo-testamento/pentateuco/genesis/1
+GET https://biblia.paulus.com.br/api/v1/bibles/biblia-pastoral/testaments/{{testament}}/books/{{group}}/children/{{book}}/chapters/{{chapter}}
+# https://biblia.paulus.com.br/api/v1/links/get-prev-next?currentChapter={{chapter}}&currentBookName={{book}} => Relevante para interface, mas inútil aqui.
+
+
+
+### Visão hierárquica (percebi tarde demais, mas no final ficou até mais simples)
+GET https://biblia.paulus.com.br/api/v1/bibles
+###
+@biblia=biblia-pastoral
+GET https://biblia.paulus.com.br/api/v1/bibles/{{biblia}}/testaments
+###
+@testament=antigo-testamento
+GET https://biblia.paulus.com.br/api/v1/bibles/{{biblia}}/testaments/{{testament}}
+###
+@book=pentateuco
+GET https://biblia.paulus.com.br/api/v1/bibles/{{biblia}}/testaments/{{testament}}/books/{{book}}
+###
+@child=genesis
+GET https://biblia.paulus.com.br/api/v1/bibles/{{biblia}}/testaments/{{testament}}/books/{{book}}/children/{{child}}
+###
+@chapter=2
+GET https://biblia.paulus.com.br/api/v1/bibles/{{biblia}}/testaments/{{testament}}/books/{{book}}/children/{{child}}/chapters/{{chapter}}
