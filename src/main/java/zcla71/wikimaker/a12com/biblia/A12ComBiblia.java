@@ -125,7 +125,7 @@ public class A12ComBiblia {
             log.info("\tJson já gerado.");
             biblia = objectMapper.readValue(jsonDownloadFile, Biblia.class);
         } else {
-            biblia = downloadBiblia(objectMapper, jsonDownloadFile);
+            biblia = downloadBiblia();
             objectMapper.writer(prettyPrinter).writeValue(jsonDownloadFile, biblia);
         }
 
@@ -141,7 +141,7 @@ public class A12ComBiblia {
 
     }
 
-    private Biblia downloadBiblia(ObjectMapper objectMapper, File jsonDownloadFile) throws URISyntaxException, StreamReadException, DatabindException, IOException {
+    private Biblia downloadBiblia() throws URISyntaxException, StreamReadException, DatabindException, IOException {
         log.info("\tDownload");
 
         String strUrlBooks = BASE_API_URL + "get_books";

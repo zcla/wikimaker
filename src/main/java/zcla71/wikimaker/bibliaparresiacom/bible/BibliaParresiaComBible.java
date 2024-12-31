@@ -126,7 +126,7 @@ public class BibliaParresiaComBible {
             log.info("\tJson já gerado.");
             biblia = objectMapper.readValue(jsonDownloadFile, Biblia.class);
         } else {
-            biblia = downloadBiblia(objectMapper, jsonDownloadFile);
+            biblia = downloadBiblia(objectMapper);
             objectMapper.writer(prettyPrinter).writeValue(jsonDownloadFile, biblia);
         }
 
@@ -141,7 +141,7 @@ public class BibliaParresiaComBible {
         wiki.save(wikiOutputFile);
     }
 
-    private Biblia downloadBiblia(ObjectMapper objectMapper, File jsonDownloadFile) throws URISyntaxException, StreamReadException, DatabindException, IOException {
+    private Biblia downloadBiblia(ObjectMapper objectMapper) throws URISyntaxException, StreamReadException, DatabindException, IOException {
         log.info("\tDownload");
 
         String strUrlBooks = BASE_API_URL + "books";

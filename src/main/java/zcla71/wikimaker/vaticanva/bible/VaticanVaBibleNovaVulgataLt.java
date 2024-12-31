@@ -140,7 +140,7 @@ new VaticanVaBibleNovaVulgataLt();
             log.info("\tJson já gerado.");
             biblia = objectMapper.readValue(jsonDownloadFile, Biblia.class);
         } else {
-            biblia = downloadBiblia(jsonDownloadFile);
+            biblia = downloadBiblia();
             objectMapper.writer(prettyPrinter).writeValue(jsonDownloadFile, biblia);
         }
 
@@ -155,7 +155,7 @@ new VaticanVaBibleNovaVulgataLt();
         wiki.save(wikiOutputFile);
     }
 
-    private Biblia downloadBiblia(File jsonDownloadFile) throws IOException {
+    private Biblia downloadBiblia() throws IOException {
         log.info("\tDownload");
 
         Biblia result = new Biblia(NOME, SITE_URL);
