@@ -15,26 +15,26 @@ Criando tiddlywikis a partir de dados encontrados na internet
 
 ## Próximas
 
+* paulus.com.br - Bíblia Pastoral. Os textos parecem ser idênticos; ambos contêm notas.
+  * [json] [pt] https://biblia.paulus.com.br/
+  * [pt] https://www.paulus.com.br/biblia-pastoral/_INDEX.HTM
+
 * github.com/Bible-Projects - várias versões no formato MyBible
   * `mybible` [pt] https://github.com/Bible-Projects/believers-sword-next/raw/refs/heads/main/Modules/Bible/B%C3%ADblia%20Ave-Maria%201959.SQLite3 Ave-Maria
   * `mybible` [pt] https://github.com/Bible-Projects/believers-sword-next/raw/refs/heads/main/Modules/Bible/B%C3%ADblia%20Padre%20Matos%20Soares%201950.SQLite3 Matos Soares
-
-* tuapalavra.com.br - CNBB antiga (1987?); talvez o código sirva para todas as outras dezenas de bíblias que há no mesmo site. Não consegui encontrar os deuterocanônicos.
-  * [pt] https://amp.tuapalavra.com.br/pt-BR/CNBB
-
-* paulus.com.br - Bíblia Pastoral. Os textos parecem ser idênticos; ambos contêm notas.
-  * [pt] https://www.paulus.com.br/biblia-pastoral/_INDEX.HTM
-  * [pt] https://biblia.paulus.com.br/
-
-* bibliacatolica.com.br - Parece conter captchas; talvez o código sirva para todas as outras bíblias que há no mesmo site.
-  * [pt] https://www.bibliacatolica.com.br/biblia-ave-maria/genesis/1/ Ave Maria
-  * [pt] https://www.bibliacatolica.com.br/biblia-matos-soares-1956/genesis/1/ Matos Soares 1956
 
 * clerus.org - Já importei em outro projeto, se não me engano, usando PowerShell; talvez o código sirva para todas as outras bíblias que há no mesmo site.
   * [pt] https://www.clerus.org/bibliaclerusonline/pt/66c.htm
 
 * intratext.com - É "A Bíblia", das Paulinas? Não bate com uma versão mais recente; talvez seja antiga.
   * [pt] https://www.intratext.com/IXT/POR0013/__P1.HTM
+
+* bibliacatolica.com.br - Parece conter captchas; talvez o código sirva para todas as outras bíblias que há no mesmo site.
+  * [pt] https://www.bibliacatolica.com.br/biblia-ave-maria/genesis/1/ Ave Maria
+  * [pt] https://www.bibliacatolica.com.br/biblia-matos-soares-1956/genesis/1/ Matos Soares 1956
+
+* tuapalavra.com.br - CNBB antiga (1987?); talvez o código sirva para todas as outras dezenas de bíblias que há no mesmo site. Não consegui encontrar os deuterocanônicos.
+  * [pt] https://amp.tuapalavra.com.br/pt-BR/CNBB
 
 * salvaimerainha.org.br - Há uma Bíblia católica aqui, não sei qual
   * [pt] https://salvaimerainha.org.br/biblia-online/
@@ -70,6 +70,11 @@ Criando tiddlywikis a partir de dados encontrados na internet
 
 * die-bibel.de
   * [el] https://www.die-bibel.de/en/bible/NA28/
+
+* ebible.org Muitas bíblias disponíveis para download em vários formatos: VPL (texto sem formatação; facílimo de importar), USFX (xml com texto, estrutura e comentários), USFM	(formato esquisito, mas que dá pra ler, com texto, estrutura e comentários), browserBible (html, não muito bom pra importar, mas ótimo para visualizar a estrutura dos dados)
+  * [la] https://ebible.org/find/details.php?id=latVUC Clementine Vulgate of 1598 with Glossa Ordinaria Migne edition 1880 in Latin
+  * [el] https://ebible.org/find/details.php?id=grcbrent The Greek Septuagint with Apocrypha, compiled by Sir Lancelot C. L. Brenton
+  * [várias] https://ebible.org/find/ (não achei nenhuma católica em português; há versões em grego, tem que verificar se são confiáveis e úteis)
 
 * github.com/Bible-Projects - várias bíblias no formato MyBible
   * `mybible` [várias] https://github.com/Bible-Projects/believers-sword-next/tree/main/Modules/Bible - texto
