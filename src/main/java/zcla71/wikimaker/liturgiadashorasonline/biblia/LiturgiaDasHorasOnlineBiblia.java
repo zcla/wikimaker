@@ -139,7 +139,7 @@ public class LiturgiaDasHorasOnlineBiblia {
 
         WikiBiblia wiki = makeWiki(biblia);
         log.info("\tSalvando wiki");
-        wiki.save(wikiOutputFile);
+        wiki.saveAsWiki(wikiOutputFile);
     }
 
     private Biblia downloadBiblia() throws IOException {

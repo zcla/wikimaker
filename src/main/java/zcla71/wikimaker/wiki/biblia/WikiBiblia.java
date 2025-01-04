@@ -38,6 +38,17 @@ public class WikiBiblia {
     private Collection<TiddlerVersiculo> versiculos;
     private Map<String, Object> tiddlerMap;
 
+    private String fixTitle(String title) {
+        // "Warning: avoid using any of the characters | [ ] { } in tiddler titles"
+        String result = title;
+        result = result.replaceAll("\\|", "&vert;"); // | &vert; &#x7c;
+        result = result.replaceAll("\\[", "&lbrack;"); // [ &lbrack; &#x5b;
+        result = result.replaceAll("\\]", "&rbrack;"); // ] &rbrack; &#x5d;
+        result = result.replaceAll("\\{", "&lbrace;"); // { &lbrace; &#x7b;
+        result = result.replaceAll("\\}", "&rbrace;"); // } &rbrace; &#x7d;
+        return result;
+    }
+
     public WikiBiblia(String titulo, String subtitulo) {
         this.titulo = titulo;
         this.subtitulo = subtitulo;
@@ -46,6 +57,10 @@ public class WikiBiblia {
         this.versiculos = new ArrayList<>();
         this.tiddlerMap = new LinkedHashMap<>();
     }
+
+    // TODO 3. public WikiBiblia(File wikiInputFile) {
+
+    // TODO 4. public WikiBiblia(JsonBiblia jsonBiblia) {
 
     public String setBiblia(TiddlerBiblia biblia) {
         String title = fixTitle(biblia.getTitle());
@@ -84,18 +99,7 @@ public class WikiBiblia {
         return title;
     }
 
-    private String fixTitle(String title) {
-        // "Warning: avoid using any of the characters | [ ] { } in tiddler titles"
-        String result = title;
-        result = result.replaceAll("\\|", "&vert;"); // | &vert; &#x7c;
-        result = result.replaceAll("\\[", "&lbrack;"); // [ &lbrack; &#x5b;
-        result = result.replaceAll("\\]", "&rbrack;"); // ] &rbrack; &#x5d;
-        result = result.replaceAll("\\{", "&lbrace;"); // { &lbrace; &#x7b;
-        result = result.replaceAll("\\}", "&rbrace;"); // } &rbrace; &#x7d;
-        return result;
-    }
-
-    public void save(File wikiOutputFile) throws IOException {
+    public void saveAsWiki(File wikiOutputFile) throws IOException {
         File wikiEmptyFile = new File(WIKI_EMPTY_FILE);
         if (!wikiEmptyFile.exists()) {
             log.error("\t\tWiki vazio não encontrado.");
@@ -175,4 +179,6 @@ public class WikiBiblia {
         }
         tiddlyWiki.save(wikiOutputFile);
     }
+
+    // TODO 2. public void saveAsJson(File jsonOutputFile) // Criar novas classes: JsonBiblia, etc.
 }

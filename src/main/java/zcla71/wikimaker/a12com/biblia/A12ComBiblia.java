@@ -137,7 +137,7 @@ public class A12ComBiblia {
 
         WikiBiblia wiki = makeWiki(biblia);
         log.info("\tSalvando wiki");
-        wiki.save(wikiOutputFile);
+        wiki.saveAsWiki(wikiOutputFile);
 
     }
 
