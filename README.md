@@ -5,6 +5,7 @@ Criando tiddlywikis a partir de dados encontrados na internet
 
 * [`a12_com_biblia`](https://www.a12.com/biblia) Bíblia de Aparecida
 * [`biblia_parresia_com_bible`](https://claretianos.com.br/biblia-ave-maria-online/) Bíblia Ave-Maria
+* [`biblia_paulus_com_br_biblia`](https://biblia.paulus.com.br/) Bíblia Sagrada Edição Pastoral
 * [`liturgiadashoras_online_biblia`](https://liturgiadashoras.online/biblia/biblia-jerusalem/) Bíblia de Jerusalém
 * [`ph4_org_BAM`](https://www.ph4.org/_dl.php?back=bbl&a=BAM&b=mybible&c) Bíblia Ave Maria
 * [`ph4_org_BEP`](https://www.ph4.org/_dl.php?back=bbl&a=BEP&b=mybible&c) Bíblia Sagrada Edição Pastoral 1990
@@ -15,19 +16,12 @@ Criando tiddlywikis a partir de dados encontrados na internet
 
 ## Próximas
 
-* paulus.com.br - Bíblia Pastoral. Os textos parecem ser idênticos; ambos contêm notas.
-  * [json] [pt] https://biblia.paulus.com.br/
-  * [pt] https://www.paulus.com.br/biblia-pastoral/_INDEX.HTM
-
 * github.com/Bible-Projects - várias versões no formato MyBible
   * `mybible` [pt] https://github.com/Bible-Projects/believers-sword-next/raw/refs/heads/main/Modules/Bible/B%C3%ADblia%20Ave-Maria%201959.SQLite3 Ave-Maria
   * `mybible` [pt] https://github.com/Bible-Projects/believers-sword-next/raw/refs/heads/main/Modules/Bible/B%C3%ADblia%20Padre%20Matos%20Soares%201950.SQLite3 Matos Soares
 
 * clerus.org - Já importei em outro projeto, se não me engano, usando PowerShell; talvez o código sirva para todas as outras bíblias que há no mesmo site.
   * [pt] https://www.clerus.org/bibliaclerusonline/pt/66c.htm
-
-* intratext.com - É "A Bíblia", das Paulinas? Não bate com uma versão mais recente; talvez seja antiga.
-  * [pt] https://www.intratext.com/IXT/POR0013/__P1.HTM
 
 * bibliacatolica.com.br - Parece conter captchas; talvez o código sirva para todas as outras bíblias que há no mesmo site.
   * [pt] https://www.bibliacatolica.com.br/biblia-ave-maria/genesis/1/ Ave Maria
@@ -95,6 +89,9 @@ Criando tiddlywikis a partir de dados encontrados na internet
 
 * newadvent.org
   * [el/en/lt] https://www.newadvent.org/bible/
+
+* paulus.com.br - Bíblia Pastoral. Os textos parecem ser idênticos; ambos contêm notas.
+  * [pt] https://www.paulus.com.br/biblia-pastoral/_INDEX.HTM Deve ser igual à `biblia_paulus_com_br_biblia`
 
 * perseus.tufts.edu
   * `xml` [lt] https://www.perseus.tufts.edu/hopper/text?doc=Perseus%3atext%3a1999.02.0060 (Jerome. Vulgate Bible.)
