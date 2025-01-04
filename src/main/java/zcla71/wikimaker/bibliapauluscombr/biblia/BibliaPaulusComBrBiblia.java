@@ -27,9 +27,6 @@ import zcla71.wikimaker.wiki.biblia.WikiBiblia;
 
 @Slf4j
 public class BibliaPaulusComBrBiblia {
-public static void main(String[] args) throws MalformedURLException, IOException, URISyntaxException {
-new BibliaPaulusComBrBiblia();
-}
     private static final String ID = "biblia_paulus_com_br_biblia";
     private static final String NOME = "Bíblia Sagrada Edição Pastoral";
     private static final String SITE_URL = "https://biblia.paulus.com.br/";
@@ -58,10 +55,10 @@ new BibliaPaulusComBrBiblia();
         }
 
         File wikiOutputFile = new File(WIKI_OUTPUT_FILE);
-        // if (wikiOutputFile.exists()) {
-        //     log.info("\tWiki já gerado.");
-        //     return;
-        // }
+        if (wikiOutputFile.exists()) {
+            log.info("\tWiki já gerado.");
+            return;
+        }
 
         WikiBiblia wiki = makeWiki(biblia);
         log.info("\tSalvando wiki");
