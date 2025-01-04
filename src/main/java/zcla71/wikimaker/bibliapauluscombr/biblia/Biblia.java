@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class Biblia {
+    private String nome;
     private Testaments testaments;
     private Collection<BookChildrensBooksOrChapters> bookChildrensBooksOrChapters;
     private Collection<Chapter> chapters;

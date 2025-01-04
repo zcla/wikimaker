@@ -10,7 +10,6 @@ public class Testaments {
     // Propriedades da API
     private Collection<Testament> data;
     // Propriedades "minhas"
-    private String nome;
     private String urlSite;
     private String url;
     private LocalDateTime timestamp;

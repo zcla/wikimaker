@@ -9,7 +9,6 @@ public class BookChildrensBooksOrChapters {
     // Propriedades da API
     private BookChildrensBooksOrChaptersData data;
     // Propriedades "minhas"
-    private String nome;
     private String urlSite;
     private String url;
     private LocalDateTime timestamp;

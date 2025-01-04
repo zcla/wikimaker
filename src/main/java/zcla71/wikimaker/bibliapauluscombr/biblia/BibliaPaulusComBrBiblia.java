@@ -8,14 +8,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
-import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
-import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -54,27 +49,28 @@ new BibliaPaulusComBrBiblia();
 
         File jsonDownloadFile = new File(JSON_DOWNLOAD_FILE_NAME);
         Biblia biblia = null;
-        // if (jsonDownloadFile.exists()) {
-        //     log.info("\tJson já gerado.");
-        //     testaments = objectMapper.readValue(jsonDownloadFile, Testaments.class);
-        // } else {
+        if (jsonDownloadFile.exists()) {
+            log.info("\tJson já gerado.");
+            biblia = objectMapper.readValue(jsonDownloadFile, Biblia.class);
+        } else {
             biblia = downloadBiblia();
             objectMapper.writer(prettyPrinter).writeValue(jsonDownloadFile, biblia);
-        // }
+        }
 
-        // File wikiOutputFile = new File(WIKI_OUTPUT_FILE);
+        File wikiOutputFile = new File(WIKI_OUTPUT_FILE);
         // if (wikiOutputFile.exists()) {
         //     log.info("\tWiki já gerado.");
         //     return;
         // }
 
-        // WikiBiblia wiki = makeWiki(biblia);
-        // log.info("\tSalvando wiki");
-        // wiki.save(wikiOutputFile);
+        WikiBiblia wiki = makeWiki(biblia);
+        log.info("\tSalvando wiki");
+        wiki.save(wikiOutputFile);
     }
 
     private Biblia downloadBiblia() throws MalformedURLException, IOException, URISyntaxException {
         Biblia result = new Biblia();
+        result.setNome(NOME);
         result.setTestaments(downloadTestaments());
 
         result.setBookChildrensBooksOrChapters(new ArrayList<>());
@@ -83,6 +79,12 @@ new BibliaPaulusComBrBiblia();
             Collection<TestamentParentOrChildren> testamentParentOrChildren = new ArrayList<>();
             testamentParentOrChildren.addAll(testament.getParent());
             testamentParentOrChildren.addAll(testament.getChildren());
+            testamentParentOrChildren = testamentParentOrChildren.stream().filter(c -> c.getTestament_id().equals(testament.getId())).toList(); // Remove os 2 livros do NT que aparecem no AT: At e Ap
+            if (testament.getId().equals(2)) { // Remove os 2 "grupos" do NT que são idênticos aos respectivos livros: At e Ap
+                TestamentParentOrChildren at = testamentParentOrChildren.stream().filter(c -> c.getId().equals(61)).findFirst().get();
+                TestamentParentOrChildren ap = testamentParentOrChildren.stream().filter(c -> c.getId().equals(85)).findFirst().get();
+                testamentParentOrChildren = testamentParentOrChildren.stream().filter(c -> (c != at) && (c != ap)).toList();
+            }
             for (TestamentParentOrChildren tpoc : testamentParentOrChildren) {
                 BookChildrensBooksOrChapters bcboc = downloadTestamentParentOrChildren(tpoc);
                 result.getBookChildrensBooksOrChapters().add(bcboc);
@@ -104,7 +106,6 @@ new BibliaPaulusComBrBiblia();
         String strUrlTestaments = BASE_API_URL + "testaments";
         RestCall restTestaments = new RestCall(strUrlTestaments);
         Testaments result = restTestaments.getJson(Testaments.class);
-        result.setNome(NOME);
         result.setUrlSite(SITE_URL);
         result.setUrl(strUrlTestaments);
         result.setTimestamp(LocalDateTime.now());
@@ -118,7 +119,6 @@ new BibliaPaulusComBrBiblia();
         String strUrlChildrensBooksOrChapters = BASE_API_URL + "books/" + urlBookId + "/childrens-books-or-chapters";
         RestCall restChildrensBooksOrChapters = new RestCall(strUrlChildrensBooksOrChapters);
         BookChildrensBooksOrChapters result = restChildrensBooksOrChapters.getJson(BookChildrensBooksOrChapters.class);
-        result.setNome(NOME);
         result.setUrlSite(SITE_URL);
         result.setUrl(strUrlChildrensBooksOrChapters);
         result.setTimestamp(LocalDateTime.now());
@@ -136,7 +136,6 @@ new BibliaPaulusComBrBiblia();
         String strUrlChapter = BASE_API_URL + urlBookId;
         RestCall restChapter = new RestCall(strUrlChapter);
         Chapter result = restChapter.getJson(Chapter.class);
-        result.setNome(NOME);
         result.setUrlSite(SITE_URL);
         result.setUrl(strUrlChapter);
         result.setTimestamp(LocalDateTime.now());
@@ -148,91 +147,88 @@ new BibliaPaulusComBrBiblia();
         return StringUtils.removeAcentos(str.toLowerCase()).replaceAll(" ", "-");
     }
 
-    // private WikiBiblia makeWiki(Biblia biblia) throws IOException {
-    //     log.info("\tGerando wiki");
-    //     DateTimeFormatter dtfHuman = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+    private WikiBiblia makeWiki(Biblia biblia) {
+        log.info("\tGerando wiki");
+        DateTimeFormatter dtfHuman = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
-    //     WikiBiblia wiki = new WikiBiblia(
-    //             biblia.getNome(),
-    //             "Importada [[daqui|" + biblia.getUrlSite() + "]] em " + biblia.getTimestamp().format(dtfHuman) + "."
-    //     );
+        WikiBiblia wiki = new WikiBiblia(
+                biblia.getNome(),
+                "Importada [[daqui|" + biblia.getTestaments().getUrlSite() + "]] em " + biblia.getTestaments().getTimestamp().format(dtfHuman) + "."
+        );
 
-    //     // Bíblia
-    //     bibliaToTiddler(biblia, wiki);
+        // Bíblia
+        bibliaToTiddler(biblia, wiki);
 
-    //     return wiki;
-    // }
+        return wiki;
+    }
 
-    // private String bibliaToTiddler(Biblia biblia, WikiBiblia wiki) {
-    //     StringBuilder sbTexto = new StringBuilder("! Livros");
-    //     for (Livro livro : biblia.getData()) {
-    //         String title = livroToTiddler(biblia, livro, wiki);
-    //         sbTexto.append("\n* [[" + livro.getTitle() + "|" + title + "]]");
-    //     }
+    private String bibliaToTiddler(Biblia biblia, WikiBiblia wiki) {
+        StringBuilder sbTexto = new StringBuilder("! Livros");
+        Collection<BookChildrensBooksOrChapters> livros = biblia.getBookChildrensBooksOrChapters().stream().filter(bcboc -> bcboc.getData().getChapters() != null).toList();
+        for (BookChildrensBooksOrChapters livro : livros) {
+            String title = livroToTiddler(biblia, livro, wiki);
+            sbTexto.append("\n* [[" + livro.getData().getName() + "|" + title + "]]");
+        }
 
-    //     TiddlerBiblia tiddlerBiblia = new TiddlerBiblia(
-    //         biblia.getNome(),
-    //         biblia.getUrl(),
-    //         biblia.getTimestamp(),
-    //         sbTexto.toString()
-    //     );
-    //     return wiki.setBiblia(tiddlerBiblia);
-    // }
+        TiddlerBiblia tiddlerBiblia = new TiddlerBiblia(
+            biblia.getNome(),
+            biblia.getTestaments().getUrl(),
+            biblia.getTestaments().getTimestamp(),
+            sbTexto.toString()
+        );
+        return wiki.setBiblia(tiddlerBiblia);
+    }
 
-    // private String livroToTiddler(Biblia biblia, Livro livro, WikiBiblia wiki) {
-    //     log.info("\t\t" + livro.getSigla());
+    private String livroToTiddler(Biblia biblia, BookChildrensBooksOrChapters livro, WikiBiblia wiki) {
+        Testament testament = biblia.getTestaments().getData().stream().filter(t -> t.getName().equals(livro.getData().getTestament())).findFirst().get();
+        TestamentParentOrChildren tpoc = testament.getChildren().stream().filter(c -> c.getName().equals(livro.getData().getName())).findFirst().get();
+        String sigla = tpoc.getAbbreviation();
+        log.info("\t\t" + sigla);
 
-    //     StringBuilder sbTexto = new StringBuilder("! Capítulos");
-    //     for (Capitulo capitulo : livro.getCapitulos()) {
-    //         String title = capituloToTiddler(livro, capitulo, wiki);
-    //         sbTexto.append("\n* [[" + capitulo.getNumero() + "|" + title + "]]");
-    //     }
+        StringBuilder sbTexto = new StringBuilder("! Capítulos");
+        Collection<Chapter> chapters = biblia.getChapters().stream().filter(c -> c.getBookChildren().equals(livro.getData().getName())).toList();
+        for (Chapter capitulo : chapters) {
+            String title = capituloToTiddler(sigla, capitulo, wiki);
+            sbTexto.append("\n* [[" + capitulo.getChapter() + "|" + title + "]]");
+        }
 
-    //     TiddlerLivro tiddlerLivro = new TiddlerLivro(
-    //         livro.getSigla(),
-    //         livro.getTitle(),
-    //         biblia.getUrl(),
-    //         biblia.getTimestamp(),
-    //         sbTexto.toString()
-    //     );
-    //     return wiki.addLivro(tiddlerLivro);
-    // }
+        TiddlerLivro tiddlerLivro = new TiddlerLivro(
+            sigla,
+            livro.getData().getName(),
+            livro.getUrl(),
+            livro.getTimestamp(),
+            sbTexto.toString()
+        );
+        return wiki.addLivro(tiddlerLivro);
+    }
 
-    // private String capituloToTiddler(Livro livro, Capitulo capitulo, WikiBiblia wiki) {
-    //     StringBuilder sbTexto = new StringBuilder();
+    private String capituloToTiddler(String sigla, Chapter capitulo, WikiBiblia wiki) {
+        StringBuilder sbTexto = new StringBuilder();
 
-    //     for (Versiculo versiculo : capitulo.getData()) {
-    //         String title = versiculoToTiddler(livro, capitulo, versiculo, wiki);
-    //         if ((versiculo.getVerseNumber() == 1) && (versiculo.getChapterTitle() != null) && versiculo.getChapterTitle().length() > 0) {
-    //             sbTexto.append("! " + versiculo.getChapterTitle() + TiddlyWiki.LINE_BREAK);
-    //         }
-    //         if ((versiculo.getVerseTitle() != null) && versiculo.getVerseTitle().length() > 0) {
-    //             sbTexto.append(TiddlyWiki.LINE_BREAK + "!! " + versiculo.getVerseTitle() + TiddlyWiki.LINE_BREAK);
-    //         }
-    //         sbTexto.append("^^[[" + versiculo.getVerseNumber() + "|" + title + "]]^^{{" + title + "}}" + TiddlyWiki.LINE_BREAK);
-    //     }
+        for (ChapterVersicle versiculo : capitulo.getVersicles()) {
+            String title = versiculoToTiddler(sigla, capitulo, versiculo, wiki);
+            sbTexto.append("^^[[" + versiculo.getValue() + "|" + title + "]]^^{{" + title + "}}" + TiddlyWiki.LINE_BREAK);
+        }
 
-    //     TiddlerCapitulo tiddlerCapitulo = new TiddlerCapitulo(
-    //         livro.getSigla(),
-    //         capitulo.getNumero().toString(),
-    //         capitulo.getUrl(),
-    //         capitulo.getTimestamp(),
-    //         sbTexto.toString()
-    //     );
-    //     return wiki.addCapitulo(tiddlerCapitulo);
-    // }
+        TiddlerCapitulo tiddlerCapitulo = new TiddlerCapitulo(
+            sigla,
+            capitulo.getChapter(),
+            capitulo.getUrl(),
+            capitulo.getTimestamp(),
+            sbTexto.toString()
+        );
+        return wiki.addCapitulo(tiddlerCapitulo);
+    }
 
-    // private String versiculoToTiddler(Livro livro, Capitulo capitulo, Versiculo versiculo, WikiBiblia wiki) {
-    //     String numVersiculo = versiculo.getVerseNumber().toString();
-
-    //     TiddlerVersiculo tiddlerVersiculo = new TiddlerVersiculo(
-    //         livro.getSigla(),
-    //         capitulo.getNumero().toString(),
-    //         numVersiculo,
-    //         capitulo.getUrl(),
-    //         capitulo.getTimestamp(),
-    //         versiculo.getVerseContent()
-    //     );
-    //     return wiki.addVersiculo(tiddlerVersiculo);
-    // }
+    private String versiculoToTiddler(String sigla, Chapter capitulo, ChapterVersicle versiculo, WikiBiblia wiki) {
+        TiddlerVersiculo tiddlerVersiculo = new TiddlerVersiculo(
+            sigla,
+            capitulo.getChapter(),
+            versiculo.getValue(),
+            capitulo.getUrl(),
+            capitulo.getTimestamp(),
+            versiculo.getText()
+        );
+        return wiki.addVersiculo(tiddlerVersiculo);
+    }
 }
