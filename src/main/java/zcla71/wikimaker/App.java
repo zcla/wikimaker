@@ -15,7 +15,9 @@ import com.fasterxml.jackson.databind.DatabindException;
 import zcla71.mybible.MyBible;
 import zcla71.wikimaker.a12com.biblia.A12ComBiblia;
 import zcla71.wikimaker.bibliaparresiacom.bible.BibliaParresiaComBible;
+import zcla71.wikimaker.bibliapauluscombr.biblia.BibliaPaulusComBrBiblia;
 import zcla71.wikimaker.liturgiadashorasonline.biblia.LiturgiaDasHorasOnlineBiblia;
+import zcla71.wikimaker.vaticanva.bible.VaticanVaBibleNovaVulgataLt;
 
 @SpringBootApplication
 public class App {
@@ -23,12 +25,14 @@ public class App {
 		// Bíblias
 		new A12ComBiblia();
 		new BibliaParresiaComBible();
+		new BibliaPaulusComBrBiblia();
 		new LiturgiaDasHorasOnlineBiblia();
 		new MyBible(new URI("https://www.ph4.org/_dl.php?back=bbl&a=BAM&b=mybible&c"), "ph4_org_BAM");
 		new MyBible(new URI("https://www.ph4.org/_dl.php?back=bbl&a=BEP&b=mybible&c"), "ph4_org_BEP");
 		new MyBible(new URI("https://www.ph4.org/_dl.php?back=bbl&a=BJRD&b=mybible&c"), "ph4_org_BJRD");
 		new MyBible(new URI("https://www.ph4.org/_dl.php?back=bbl&a=BPT%2709D&b=mybible&c"), "ph4_org_BPT_09D");
 		new MyBible(new URI("https://www.ph4.org/_dl.php?back=bbl&a=CNBB&b=mybible&c"), "ph4_org_CNBB");
+		new VaticanVaBibleNovaVulgataLt();
 
 		SpringApplication.run(App.class, args);
 	}
