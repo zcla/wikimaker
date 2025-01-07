@@ -104,7 +104,7 @@ public class A12ComBiblia {
             Map.entry("iii-sao-joao", "3Jo"),
             Map.entry("sao-judas", "Jd"),
             Map.entry("apocalipse", "Ap"));
-    private static final String WIKI_OUTPUT_FILE = "./data/" + ID + ".html";
+    private static final String WIKI_OUTPUT_FILE = "./data/wiki/" + ID + ".html";
 
     public A12ComBiblia() throws StreamReadException, DatabindException, IOException, URISyntaxException {
         log.info(ID);

@@ -116,7 +116,7 @@ public class VaticanVaBibleNovaVulgataLt {
             Map.entry("epist-iii-ioannis", "3Jo"),
             Map.entry("epist-iudae", "Jd"),
             Map.entry("apocalypsis-ioannis", "Ap"));
-    private static final String WIKI_OUTPUT_FILE = "./data/" + ID + ".html";
+    private static final String WIKI_OUTPUT_FILE = "./data/wiki/" + ID + ".html";
 
     public VaticanVaBibleNovaVulgataLt() throws StreamReadException, DatabindException, IOException {
         log.info(ID);

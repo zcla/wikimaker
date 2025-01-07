@@ -106,7 +106,7 @@ public class LiturgiaDasHorasOnlineBiblia {
             Map.entry("iii-ioannis", "3Jo"),
             Map.entry("iudae", "Jd"),
             Map.entry("apocalypsis", "Ap"));
-    private static final String WIKI_OUTPUT_FILE = "./data/" + ID + ".html";
+    private static final String WIKI_OUTPUT_FILE = "./data/wiki/" + ID + ".html";
 
     public LiturgiaDasHorasOnlineBiblia() throws IOException {
         log.info(ID);

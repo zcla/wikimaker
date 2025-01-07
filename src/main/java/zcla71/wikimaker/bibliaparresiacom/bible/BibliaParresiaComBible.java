@@ -105,7 +105,7 @@ public class BibliaParresiaComBible {
             Map.entry("iii-sao-joao", "3Jo"),
             Map.entry("sao-judas", "Jd"),
             Map.entry("apocalipse", "Ap"));
-    private static final String WIKI_OUTPUT_FILE = "./data/" + ID + ".html";
+    private static final String WIKI_OUTPUT_FILE = "./data/wiki/" + ID + ".html";
 
     public BibliaParresiaComBible() throws StreamReadException, DatabindException, IOException, URISyntaxException {
         log.info(ID);

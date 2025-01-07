@@ -29,7 +29,7 @@ public class BibliaPaulusComBrBiblia {
     private static final String SITE_URL = "https://biblia.paulus.com.br/";
     private static final String BASE_API_URL = "https://biblia.paulus.com.br/api/v1/";
     private static final String JSON_DOWNLOAD_FILE_NAME = "./data/download/" + ID + ".json";
-    private static final String WIKI_OUTPUT_FILE = "./data/" + ID + ".html";
+    private static final String WIKI_OUTPUT_FILE = "./data/wiki/" + ID + ".html";
 
     public BibliaPaulusComBrBiblia() throws MalformedURLException, IOException, URISyntaxException {
         log.info(ID);
