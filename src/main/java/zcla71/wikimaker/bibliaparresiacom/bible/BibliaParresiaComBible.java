@@ -12,15 +12,12 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.core.util.DefaultIndenter;
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import lombok.extern.slf4j.Slf4j;
 import zcla71.tiddlywiki.TiddlyWiki;
+import zcla71.utils.JacksonUtils;
 import zcla71.wikimaker.wiki.biblia.TiddlerBiblia;
 import zcla71.wikimaker.wiki.biblia.TiddlerCapitulo;
 import zcla71.wikimaker.wiki.biblia.TiddlerLivro;
@@ -113,12 +110,8 @@ public class BibliaParresiaComBible {
     public BibliaParresiaComBible() throws StreamReadException, DatabindException, IOException, URISyntaxException {
         log.info(ID);
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        DefaultPrettyPrinter prettyPrinter = new DefaultPrettyPrinter();
-        prettyPrinter.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE);
+        ObjectMapper objectMapper = JacksonUtils.getObjectMapperInstance();
+        JacksonUtils.enableJavaTime(objectMapper);
 
         File jsonDownloadFile = new File(JSON_DOWNLOAD_FILE_NAME);
         Biblia biblia = null;
@@ -127,7 +120,7 @@ public class BibliaParresiaComBible {
             biblia = objectMapper.readValue(jsonDownloadFile, Biblia.class);
         } else {
             biblia = downloadBiblia(objectMapper);
-            objectMapper.writer(prettyPrinter).writeValue(jsonDownloadFile, biblia);
+            objectMapper.writer(JacksonUtils.getPrettyPrinter()).writeValue(jsonDownloadFile, biblia);
         }
 
         File wikiOutputFile = new File(WIKI_OUTPUT_FILE);

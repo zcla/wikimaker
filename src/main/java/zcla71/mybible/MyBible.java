@@ -39,6 +39,8 @@ import zcla71.mybible.model.bible.Introductions;
 import zcla71.mybible.model.bible.Stories;
 import zcla71.mybible.model.bible.Verses;
 import zcla71.sqlite.SQLiteDb;
+import zcla71.utils.JacksonUtils;
+import zcla71.wikimaker.wiki.biblia.WikiBiblia;
 
 // Documentação: https://docs.google.com/document/d/12rf4Pqy13qhnAW31uKkaWNTBDTtRbNW0s7cM0vcimlA/
 @Slf4j
@@ -71,6 +73,7 @@ public class MyBible {
         this.downloadedFileName = getDownloadFileName(this.uri);
         log.info("Downloaded file name: " + this.downloadedFileName);
         Collection<File> apagarAoFinal = new ArrayList<>();
+
         File jsonDownloadFile = new File("./data/" + id + ".json");
         if (jsonDownloadFile.exists()) {
             log.info("\tJson já gerado.");
@@ -88,6 +91,17 @@ public class MyBible {
                 }
             }
         }
+
+        // TODO Salvar wiki
+        // File wikiOutputFile = new File(WIKI_OUTPUT_FILE);
+        // if (wikiOutputFile.exists()) {
+        //     log.info("\tWiki já gerado.");
+        //     return;
+        // }
+
+        // WikiBiblia wiki = makeWiki(biblia);
+        // log.info("\tSalvando wiki");
+        // wiki.saveAsWiki(wikiOutputFile);
     }
 
     private void download() throws MalformedURLException, IOException {
@@ -135,13 +149,7 @@ public class MyBible {
     }
 
     private void save(File file) throws StreamWriteException, DatabindException, IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setSerializationInclusion(Include.NON_NULL);
-        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-        DefaultPrettyPrinter prettyPrinter = new DefaultPrettyPrinter();
-        prettyPrinter.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE);
-
-        objectMapper.writer(prettyPrinter).writeValue(file, this);
+        JacksonUtils.saveJsonPretty(file, this);
     }
 
     private void sql() throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, NoSuchFieldException {
