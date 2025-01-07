@@ -30,7 +30,7 @@ public class BibliaParresiaComBible {
     private static final String NOME = "Bíblia Ave-Maria";
     private static final String SITE_URL = "https://claretianos.com.br/biblia-ave-maria-online/";
     private static final String BASE_API_URL = "https://biblia.parresia.com/wp-json/bible/v2/";
-    private static final String JSON_DOWNLOAD_FILE_NAME = "./data/" + ID + ".json";
+    private static final String JSON_DOWNLOAD_FILE_NAME = "./data/download/" + ID + ".json";
     private static final Map<String, String> MAP_LIVRO = Map.ofEntries(
             Map.entry("genesis", "Gn"),
             Map.entry("exodo", "Ex"),

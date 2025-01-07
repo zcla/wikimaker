@@ -29,7 +29,7 @@ public class A12ComBiblia {
     private static final String NOME = "Bíblia de Aparecida";
     private static final String SITE_URL = "https://www.a12.com/biblia";
     private static final String BASE_API_URL = "https://www.a12.com/bible-api/";
-    private static final String JSON_DOWNLOAD_FILE_NAME = "./data/" + ID + ".json";
+    private static final String JSON_DOWNLOAD_FILE_NAME = "./data/download/" + ID + ".json";
     private static final Map<String, String> MAP_LIVRO = Map.ofEntries(
             Map.entry("genesis", "Gn"),
             Map.entry("exodo", "Ex"),

@@ -41,7 +41,7 @@ public class VaticanVaBibleNovaVulgataLt {
     private static final String REGEX_LIVRO = "^https:\\/\\/www\\.vatican\\.va\\/archive\\/bible\\/nova_vulgata\\/documents\\/nova-vulgata_[v|n]t_(.+?)_lt\\.html$";
     private static final String REGEX_LIVRO_GROUP_SIGLA = "$1";
     // private static final String REGEX_CAPITULO = "^https:\/\/liturgiadashoras\.online\/biblia\/biblia-jerusalem\/([^\/]+)\/(.+)\/$";
-    private static final String JSON_DOWNLOAD_FILE_NAME = "./data/" + ID + ".json";
+    private static final String JSON_DOWNLOAD_FILE_NAME = "./data/download/" + ID + ".json";
     private static final Map<String, String> MAP_LIVRO = Map.ofEntries(
             Map.entry("genesis", "Gn"),
             Map.entry("exodus", "Ex"),

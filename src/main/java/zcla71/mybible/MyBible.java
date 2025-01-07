@@ -21,13 +21,8 @@ import java.util.Collection;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.exc.StreamWriteException;
-import com.fasterxml.jackson.core.util.DefaultIndenter;
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.DatabindException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +35,6 @@ import zcla71.mybible.model.bible.Stories;
 import zcla71.mybible.model.bible.Verses;
 import zcla71.sqlite.SQLiteDb;
 import zcla71.utils.JacksonUtils;
-import zcla71.wikimaker.wiki.biblia.WikiBiblia;
 
 // Documentação: https://docs.google.com/document/d/12rf4Pqy13qhnAW31uKkaWNTBDTtRbNW0s7cM0vcimlA/
 @Slf4j
@@ -74,7 +68,7 @@ public class MyBible {
         log.info("Downloaded file name: " + this.downloadedFileName);
         Collection<File> apagarAoFinal = new ArrayList<>();
 
-        File jsonDownloadFile = new File("./data/" + id + ".json");
+        File jsonDownloadFile = new File("./data/download/" + id + ".json");
         if (jsonDownloadFile.exists()) {
             log.info("\tJson já gerado.");
         } else {
