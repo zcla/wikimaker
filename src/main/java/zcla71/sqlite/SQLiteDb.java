@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 // Ferramenta para abrir arquivos .SQLite3 online: https://sqliteviewer.app/
 public class SQLiteDb {
@@ -34,8 +35,8 @@ public class SQLiteDb {
         return result.stream().filter(tn -> !tn.startsWith("sqlite_")).toList();
     }
 
-    public <T> Collection<T> getData(Connection conn, String tableName, Class<T> classe) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, NoSuchFieldException {
-        Collection<T> result = new ArrayList<>();
+    public <T> List<T> getData(Connection conn, String tableName, Class<T> classe) throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, NoSuchFieldException {
+        List<T> result = new ArrayList<>();
         try (
             Statement stat = conn.createStatement();
             ResultSet rs = stat.executeQuery("select * from " + tableName);

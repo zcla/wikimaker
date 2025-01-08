@@ -16,15 +16,22 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.exc.StreamWriteException;
 import com.fasterxml.jackson.databind.DatabindException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import zcla71.mybible.model.Bible;
 import zcla71.mybible.model.Commentaries;
@@ -34,21 +41,31 @@ import zcla71.mybible.model.bible.Introductions;
 import zcla71.mybible.model.bible.Stories;
 import zcla71.mybible.model.bible.Verses;
 import zcla71.sqlite.SQLiteDb;
+import zcla71.tiddlywiki.TiddlyWiki;
 import zcla71.utils.JacksonUtils;
+import zcla71.wikimaker.wiki.biblia.TiddlerBiblia;
+import zcla71.wikimaker.wiki.biblia.TiddlerCapitulo;
+import zcla71.wikimaker.wiki.biblia.TiddlerLivro;
+import zcla71.wikimaker.wiki.biblia.TiddlerVersiculo;
+import zcla71.wikimaker.wiki.biblia.WikiBiblia;
 
 // Documentação: https://docs.google.com/document/d/12rf4Pqy13qhnAW31uKkaWNTBDTtRbNW0s7cM0vcimlA/
 @Slf4j
+@NoArgsConstructor
 public class MyBible {
     private final File TEMP_DIRECTORY = new File("./temp");
     private URI uri;
     @Getter
     private String url;
     @Getter
+    private LocalDateTime timestamp;
+    @Getter
     private String downloadedFileName;
     private File zippedFile = null;
     private Collection<File> unzippedFiles = null;
 
     // Bible Module
+    // ATENÇÃO! Quando implementar algum, não esquecer de incluir em "if (jsonDownloadFile.exists()) {", dentro do construtor
     @Getter
     private Bible bible = null;
     // TODO Dictionary Module
@@ -66,11 +83,20 @@ public class MyBible {
         log.info("URI: " + this.uri.toString());
         this.downloadedFileName = getDownloadFileName(this.uri);
         log.info("Downloaded file name: " + this.downloadedFileName);
+        this.timestamp = LocalDateTime.now();
         Collection<File> apagarAoFinal = new ArrayList<>();
 
         File jsonDownloadFile = new File("./data/download/" + id + ".json");
         if (jsonDownloadFile.exists()) {
-            log.info("\tJson já gerado.");
+            log.info("\tJson já gerado. Carregando.");
+            ObjectMapper objectMapper = JacksonUtils.getObjectMapperInstance();
+            JacksonUtils.enableJavaTime(objectMapper);
+            MyBible loaded = objectMapper.readValue(jsonDownloadFile, MyBible.class);
+            this.url = loaded.url;
+            this.timestamp = loaded.timestamp;
+            this.downloadedFileName = loaded.downloadedFileName;
+            this.bible = loaded.bible;
+            this.commentaries = loaded.commentaries;
         } else {
             try {
                 download();
@@ -86,16 +112,15 @@ public class MyBible {
             }
         }
 
-        // TODO Salvar wiki
-        // File wikiOutputFile = new File(WIKI_OUTPUT_FILE);
-        // if (wikiOutputFile.exists()) {
-        //     log.info("\tWiki já gerado.");
-        //     return;
-        // }
+        File wikiOutputFile = new File("./data/wiki/" + id + ".html");
+        if (wikiOutputFile.exists()) {
+            log.info("\tWiki já gerado.");
+            return;
+        }
 
-        // WikiBiblia wiki = makeWiki(biblia);
-        // log.info("\tSalvando wiki");
-        // wiki.saveAsWiki(wikiOutputFile);
+        WikiBiblia wiki = makeWiki();
+        log.info("\tSalvando wiki");
+        wiki.saveAsWiki(wikiOutputFile);
     }
 
     private void download() throws MalformedURLException, IOException {
@@ -143,7 +168,9 @@ public class MyBible {
     }
 
     private void save(File file) throws StreamWriteException, DatabindException, IOException {
-        JacksonUtils.saveJsonPretty(file, this);
+        ObjectMapper objectMapper = JacksonUtils.getObjectMapperInstance();
+        JacksonUtils.enableJavaTime(objectMapper);
+        objectMapper.writer(JacksonUtils.getPrettyPrinter()).writeValue(file, this);
     }
 
     private void sql() throws SQLException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, NoSuchFieldException {
@@ -167,32 +194,32 @@ public class MyBible {
                         log.info("\t" + tableName);
                         switch (tableName) {
                             case "info":
-                                Collection<zcla71.mybible.model.bible.Info> info = sqLiteDb.getData(conn, tableName, zcla71.mybible.model.bible.Info.class);
+                                List<zcla71.mybible.model.bible.Info> info = sqLiteDb.getData(conn, tableName, zcla71.mybible.model.bible.Info.class);
                                 this.bible.setInfo(info);
                                 break;
 
                             case "books":
-                                Collection<Books> books = sqLiteDb.getData(conn, tableName, Books.class);
+                                List<Books> books = sqLiteDb.getData(conn, tableName, Books.class);
                                 this.bible.setBooks(books);
                                 break;
 
                             case "books_all":
-                                Collection<BooksAll> booksAll = sqLiteDb.getData(conn, tableName, BooksAll.class);
+                                List<BooksAll> booksAll = sqLiteDb.getData(conn, tableName, BooksAll.class);
                                 this.bible.setBooksAll(booksAll);
                                 break;
 
                             case "verses":
-                                Collection<Verses> verses = sqLiteDb.getData(conn, tableName, Verses.class);
+                                List<Verses> verses = sqLiteDb.getData(conn, tableName, Verses.class);
                                 this.bible.setVerses(verses);
                                 break;
 
                             case "introductions":
-                                Collection<Introductions> introductions = sqLiteDb.getData(conn, tableName, Introductions.class);
+                                List<Introductions> introductions = sqLiteDb.getData(conn, tableName, Introductions.class);
                                 this.bible.setIntroductions(introductions);
                                 break;
 
                             case "stories":
-                                Collection<Stories> stories = sqLiteDb.getData(conn, tableName, Stories.class);
+                                List<Stories> stories = sqLiteDb.getData(conn, tableName, Stories.class);
                                 this.bible.setStories(stories);
                                 break;
 
@@ -271,5 +298,135 @@ public class MyBible {
                 this.unzippedFiles.add(resolvedPath.toFile());
             }
         }
+    }
+
+    @JsonIgnore
+    private String getNome() {
+        return this.bible.getInfo().stream().filter(i -> i.getName().equals("description")).findFirst().get().getValue();
+    }
+
+    private WikiBiblia makeWiki() throws IOException {
+        log.info("\tGerando wiki");
+        DateTimeFormatter dtfHuman = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+
+        WikiBiblia wiki = new WikiBiblia(
+                this.getNome(),
+                "Importada [[daqui|" + this.getUrl() + "]] em " + this.getTimestamp().format(dtfHuman) + "."
+        );
+
+        // Bíblia
+        bibliaToTiddler(wiki);
+
+        return wiki;
+    }
+
+    private String bibliaToTiddler(WikiBiblia wiki) {
+        StringBuilder sbTexto = new StringBuilder("! Livros");
+        // Documentação: "MyBIble 4.4.3 alpha14 or a later version knows about both the books_all and the BOOKS table: it looks for the BOOKS_ALL table first and only if it is not found uses the BOOKS table."
+        if (this.bible.getBooksAll() != null && this.bible.getBooksAll().size() > 0) {
+            List<BooksAll> booksAllses = this.bible.getBooksAll();
+            booksAllses.sort(new Comparator<BooksAll>() {
+                @Override
+                public int compare(BooksAll b1, BooksAll b2) {
+                    return b1.getBook_number().compareTo(b2.getBook_number());
+                }
+            });
+            for (BooksAll booksAll : booksAllses) {
+                if (booksAll.getIs_present()) {
+                    String name = booksAll.getTitle();
+                    if (name == null) {
+                        name = booksAll.getLong_name();
+                    }
+                    String title = livroToTiddler(booksAll, wiki);
+                    sbTexto.append("\n* [[" + name + "|" + title + "]]");
+                }
+            }
+        } else {
+            throw new RuntimeException("Implementar livroToTiddler(Books)");
+            // for (Books books : this.bible.getBooks()) {
+            //     String title = livroToTiddler(biblia, livro, wiki);
+            //     sbTexto.append("\n* [[" + books.getLong_name() + "|" + title + "]]");
+            // }
+        }
+
+        TiddlerBiblia tiddlerBiblia = new TiddlerBiblia(
+            this.getNome(),
+            this.getUrl(),
+            this.getTimestamp(),
+            sbTexto.toString()
+        );
+        return wiki.setBiblia(tiddlerBiblia);
+    }
+
+    private String livroToTiddler(BooksAll booksAll, WikiBiblia wiki) {
+        log.info("\t\t" + booksAll.getShort_name());
+
+        StringBuilder sbTexto = new StringBuilder("! Capítulos");
+        Integer last = null;
+        List<Verses> verseses = this.bible.getVerses().stream().filter(v -> v.getBook_number().equals(booksAll.getBook_number())).toList();
+        verseses = new ArrayList<>(verseses);
+        verseses.sort(new Comparator<Verses>() {
+            @Override
+            public int compare(Verses v1, Verses v2) {
+                return v1.getChapter().compareTo(v2.getChapter());
+            }
+        });
+        for (Verses verses : verseses) {
+            Integer current = verses.getChapter();
+            if (!current.equals(last)) {
+                String title = capituloToTiddler(booksAll, verses, wiki);
+                sbTexto.append("\n* [[" + verses.getChapter().toString() + "|" + title + "]]");
+                last = current;
+            }
+        }
+
+        TiddlerLivro tiddlerLivro = new TiddlerLivro(
+            booksAll.getShort_name(),
+            booksAll.getLong_name(),
+            this.getUrl(),
+            this.getTimestamp(),
+            sbTexto.toString()
+        );
+        return wiki.addLivro(tiddlerLivro);
+    }
+
+    private String capituloToTiddler(BooksAll booksAll, Verses versesChapter, WikiBiblia wiki) {
+        StringBuilder sbTexto = new StringBuilder();
+
+        List<Verses> verseses = this.bible.getVerses().stream().filter(v -> v.getBook_number().equals(booksAll.getBook_number()) && v.getChapter().equals(versesChapter.getChapter())).toList();
+        verseses = new ArrayList<>(verseses);
+        verseses.sort(new Comparator<Verses>() {
+            @Override
+            public int compare(Verses v1, Verses v2) {
+                return v1.getChapter().compareTo(v2.getChapter());
+            }
+        });
+        for (Verses verses : verseses) {
+            String title = versiculoToTiddler(booksAll, versesChapter, verses, wiki);
+            sbTexto.append("^^[[" + verses.getVerse().toString() + "|" + title + "]]^^{{" + title + "}}" + TiddlyWiki.LINE_BREAK);
+        }
+
+        TiddlerCapitulo tiddlerCapitulo = new TiddlerCapitulo(
+            booksAll.getShort_name(),
+            versesChapter.getChapter().toString(),
+            this.getUrl(),
+            this.getTimestamp(),
+            sbTexto.toString()
+        );
+        return wiki.addCapitulo(tiddlerCapitulo);
+    }
+
+    private String versiculoToTiddler(BooksAll booksAll, Verses versesChapter, Verses verses, WikiBiblia wiki) {
+        String numVersiculo = verses.getVerse().toString();
+
+        TiddlerVersiculo tiddlerVersiculo = new TiddlerVersiculo(
+            booksAll.getShort_name(),
+            versesChapter.getChapter().toString(),
+            numVersiculo,
+            this.getUrl(),
+            this.getTimestamp(),
+            verses.getText()
+        );
+        return wiki.addVersiculo(tiddlerVersiculo);
     }
 }

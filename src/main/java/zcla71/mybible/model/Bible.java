@@ -1,6 +1,6 @@
 package zcla71.mybible.model;
 
-import java.util.Collection;
+import java.util.List;
 
 import lombok.Data;
 import zcla71.mybible.model.bible.Books;
@@ -12,12 +12,12 @@ import zcla71.mybible.model.bible.Verses;
 
 @Data
 public class Bible {
-    private Collection<Info> info;
-    private Collection<Books> books;
-    private Collection<BooksAll> booksAll;
-    private Collection<Verses> verses;
-    private Collection<Introductions> introductions;
-    private Collection<Stories> stories;
+    private List<Info> info;
+    private List<Books> books;
+    private List<BooksAll> booksAll;
+    private List<Verses> verses;
+    private List<Introductions> introductions;
+    private List<Stories> stories;
     // TODO CREATE TABLE morphology_indications (indication TEXT, applicable_to TEXT, language as TEXT, meaning TEXT)
     // TODO CREATE TABLE morphology_topics (indication TEXT, topic TEXT)
 }

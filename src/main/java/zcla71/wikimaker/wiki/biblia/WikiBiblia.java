@@ -9,6 +9,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import com.fasterxml.jackson.core.exc.StreamWriteException;
+import com.fasterxml.jackson.databind.DatabindException;
+
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
@@ -16,6 +19,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import zcla71.tiddlywiki.Tiddler;
 import zcla71.tiddlywiki.TiddlyWiki;
+import zcla71.utils.JacksonUtils;
 
 @Data
 @Slf4j
@@ -58,9 +62,9 @@ public class WikiBiblia {
         this.tiddlerMap = new LinkedHashMap<>();
     }
 
-    // TODO 3. public WikiBiblia(File wikiInputFile) {
+    // TODO 1. public WikiBiblia(File wikiInputFile) {
 
-    // TODO 4. public WikiBiblia(JsonBiblia jsonBiblia) {
+    // TODO 2. public WikiBiblia(JsonBiblia jsonBiblia) {
 
     public String setBiblia(TiddlerBiblia biblia) {
         String title = fixTitle(biblia.getTitle());
@@ -180,5 +184,33 @@ public class WikiBiblia {
         tiddlyWiki.save(wikiOutputFile);
     }
 
-    // TODO 2. public void saveAsJson(File jsonOutputFile) // Criar novas classes: JsonBiblia, etc.
+    public void saveAsJson(File jsonOutputFile) throws StreamWriteException, DatabindException, IOException {
+        JsonBiblia jsonBiblia = asJson();
+        System.out.println(jsonBiblia);
+        JacksonUtils.saveJsonPretty(jsonOutputFile, jsonBiblia);
+    }
+
+    private JsonBiblia asJson() {
+        JsonBiblia result = new JsonBiblia(this.getBiblia());
+
+        for (TiddlerLivro tLivro : this.getLivros()) {
+            JsonLivro jLivro = new JsonLivro(tLivro);
+            result.getLivros().add(jLivro);
+        }
+
+        for (TiddlerCapitulo tCapitulo : this.getCapitulos()) {
+            JsonCapitulo jCapitulo = new JsonCapitulo(tCapitulo);
+            JsonLivro jLivro = result.getLivros().stream().filter(l -> l.getSigla().equals(tCapitulo.getLivro())).findFirst().get();
+            jLivro.getCapitulos().add(jCapitulo);
+        }
+
+        for (TiddlerVersiculo tVersiculo : this.getVersiculos()) {
+            JsonVersiculo jVersiculo = new JsonVersiculo(tVersiculo);
+            JsonLivro jLivro = result.getLivros().stream().filter(l -> l.getSigla().equals(tVersiculo.getLivro())).findFirst().get();
+            JsonCapitulo jCapitulo = jLivro.getCapitulos().stream().filter(c -> c.getNumero().equals(tVersiculo.getCapitulo())).findFirst().get();
+            jCapitulo.getVersiculos().add(jVersiculo);
+        }
+
+        return result;
+    }
 }
