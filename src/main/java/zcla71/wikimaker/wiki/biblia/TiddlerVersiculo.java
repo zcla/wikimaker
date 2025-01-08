@@ -3,6 +3,8 @@ package zcla71.wikimaker.wiki.biblia;
 import java.time.LocalDateTime;
 
 import lombok.Data;
+import zcla71.tiddlywiki.Tiddler;
+import zcla71.tiddlywiki.TiddlyWiki;
 
 @Data
 public class TiddlerVersiculo {
@@ -20,6 +22,15 @@ public class TiddlerVersiculo {
         this.url = url;
         this.timestamp = timestamp;
         this.texto = texto;
+    }
+
+    public TiddlerVersiculo(Tiddler versiculo) {
+        this.livro = versiculo.getCustomProperties().get("livro");
+        this.capitulo = versiculo.getCustomProperties().get("capitulo");;
+        this.numero = versiculo.getCustomProperties().get("numero");
+        this.url = versiculo.getCustomProperties().get("url");
+        this.timestamp = LocalDateTime.parse(versiculo.getCustomProperties().get("timestamp"), TiddlyWiki.DATE_TIME_FORMATTER_TIDDLYWIKI);
+        this.texto = versiculo.getText();
     }
 
     public String getTitle() {

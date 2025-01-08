@@ -90,6 +90,14 @@ public class TiddlyWiki {
         return tiddlers.stream().filter(t -> title.equals(t.getTitle())).findFirst().orElse(null);
     }
 
+    public String getSiteSubtitle() {
+        return getByTitle("$:/SiteSubtitle").getText();
+    }
+
+    public String getSiteTitle() {
+        return getByTitle("$:/SiteTitle").getText();
+    }
+
     public void insert(Tiddler tiddler) {
         Tiddler existing = getByTitle(tiddler.getTitle());
         if (existing != null) {

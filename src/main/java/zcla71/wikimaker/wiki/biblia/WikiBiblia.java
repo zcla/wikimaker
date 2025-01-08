@@ -5,12 +5,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
 import com.fasterxml.jackson.core.exc.StreamWriteException;
 import com.fasterxml.jackson.databind.DatabindException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -62,9 +64,39 @@ public class WikiBiblia {
         this.tiddlerMap = new LinkedHashMap<>();
     }
 
-    // TODO 1. public WikiBiblia(File wikiInputFile) {
+    public WikiBiblia(File wikiInputFile) throws IOException {
+        this.tiddlerMap = new LinkedHashMap<>();
 
-    // TODO 2. public WikiBiblia(JsonBiblia jsonBiblia) {
+        TiddlyWiki tiddlyWiki = new TiddlyWiki(wikiInputFile);
+        this.titulo = tiddlyWiki.getSiteTitle();
+        this.subtitulo = tiddlyWiki.getSiteSubtitle();
+
+        List<Tiddler> biblias = tiddlyWiki.listByTag("Bíblia");
+        if (biblias.size() != 1) {
+            throw new RuntimeException("Erro ao buscar bíblia");
+        }
+        this.setBiblia(new TiddlerBiblia(biblias.get(0)));
+
+        this.livros = new ArrayList<>();
+        List<Tiddler> livros = tiddlyWiki.listByTag("Livro");
+        for (Tiddler livro : livros) {
+            this.addLivro(new TiddlerLivro(livro));
+        }
+
+        this.capitulos = new ArrayList<>();
+        List<Tiddler> capitulos = tiddlyWiki.listByTag("Capítulo");
+        for (Tiddler capitulo : capitulos) {
+            this.addCapitulo(new TiddlerCapitulo(capitulo));
+        }
+
+        this.versiculos = new ArrayList<>();
+        List<Tiddler> versiculos = tiddlyWiki.listByTag("Versículo");
+        for (Tiddler versiculo : versiculos) {
+            this.addVersiculo(new TiddlerVersiculo(versiculo));
+        }
+    }
+
+    // TODO public WikiBiblia(JsonBiblia jsonBiblia) {}
 
     public String setBiblia(TiddlerBiblia biblia) {
         String title = fixTitle(biblia.getTitle());
@@ -153,7 +185,7 @@ public class WikiBiblia {
                 if (!title.equals(capitulo.getTitle())) {
                     tiddlerCapitulo.setTags(tiddlerCapitulo.getTags() + " Duplicado");
                 }
-                tiddlerCapitulo.getCustomProperties().put("livro", "[[" + capitulo.getLivro() + "]]");
+                tiddlerCapitulo.getCustomProperties().put("livro", capitulo.getLivro());
                 tiddlerCapitulo.getCustomProperties().put("numero", capitulo.getNumero());
                 tiddlerCapitulo.getCustomProperties().put("url", capitulo.getUrl());
                 tiddlerCapitulo.getCustomProperties().put("timestamp", capitulo.getTimestamp().format(TiddlyWiki.DATE_TIME_FORMATTER_TIDDLYWIKI));
@@ -186,8 +218,9 @@ public class WikiBiblia {
 
     public void saveAsJson(File jsonOutputFile) throws StreamWriteException, DatabindException, IOException {
         JsonBiblia jsonBiblia = asJson();
-        System.out.println(jsonBiblia);
-        JacksonUtils.saveJsonPretty(jsonOutputFile, jsonBiblia);
+        ObjectMapper objectMapper = JacksonUtils.getObjectMapperInstance();
+        JacksonUtils.enableJavaTime(objectMapper);
+        objectMapper.writer(JacksonUtils.getPrettyPrinter()).writeValue(jsonOutputFile, jsonBiblia);
     }
 
     private JsonBiblia asJson() {

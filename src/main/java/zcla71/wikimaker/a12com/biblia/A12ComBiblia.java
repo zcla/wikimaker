@@ -105,6 +105,7 @@ public class A12ComBiblia {
             Map.entry("sao-judas", "Jd"),
             Map.entry("apocalipse", "Ap"));
     private static final String WIKI_OUTPUT_FILE = "./data/wiki/" + ID + ".html";
+    private static final String JSON_OUTPUT_FILE_NAME = "./data/json/" + ID + ".json";
 
     public A12ComBiblia() throws StreamReadException, DatabindException, IOException, URISyntaxException {
         log.info(ID);
@@ -115,7 +116,7 @@ public class A12ComBiblia {
         File jsonDownloadFile = new File(JSON_DOWNLOAD_FILE_NAME);
         Biblia biblia = null;
         if (jsonDownloadFile.exists()) {
-            log.info("\tJson já gerado.");
+            log.info("\tDownload já gerado. Carregando.");
             biblia = objectMapper.readValue(jsonDownloadFile, Biblia.class);
         } else {
             biblia = downloadBiblia();
@@ -123,15 +124,18 @@ public class A12ComBiblia {
         }
 
         File wikiOutputFile = new File(WIKI_OUTPUT_FILE);
+        WikiBiblia wiki = null;
         if (wikiOutputFile.exists()) {
-            log.info("\tWiki já gerado.");
-            return;
+            log.info("\tWiki já gerado. Carregando.");
+            wiki = new WikiBiblia(new File(WIKI_OUTPUT_FILE));
+        } else {
+            wiki = makeWiki(biblia);
+            log.info("\tSalvando wiki");
+            wiki.saveAsWiki(wikiOutputFile);
         }
 
-        WikiBiblia wiki = makeWiki(biblia);
-        log.info("\tSalvando wiki");
-        wiki.saveAsWiki(wikiOutputFile);
-
+        log.info("\tSalvando json");
+        wiki.saveAsJson(new File(JSON_OUTPUT_FILE_NAME));
     }
 
     private Biblia downloadBiblia() throws URISyntaxException, StreamReadException, DatabindException, IOException {
