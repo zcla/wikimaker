@@ -17,7 +17,7 @@ import zcla71.wikimaker.wiki.biblia.TiddlerVersiculo;
 import zcla71.wikimaker.wiki.biblia.WikiBiblia;
 
 @Slf4j
-public class A12ComBiblia extends WikiMaker {
+public class A12ComBiblia extends WikiMaker<Biblia> {
     private static final String NOME = "Bíblia de Aparecida";
     private static final String SITE_URL = "https://www.a12.com/biblia";
     private static final String BASE_API_URL = "https://www.a12.com/bible-api/";
@@ -102,7 +102,7 @@ public class A12ComBiblia extends WikiMaker {
     }
 
     @Override
-    protected Class<? extends Object> getDownloadClass() {
+    protected Class<Biblia> getDownloadClass() {
         return Biblia.class;
     }
 
@@ -111,7 +111,7 @@ public class A12ComBiblia extends WikiMaker {
     }
 
     @Override
-    protected Object doDownload() throws Exception {
+    protected Biblia doDownload() throws Exception {
         String strUrlBooks = BASE_API_URL + "get_books";
         RestCall restBooks = new RestCall(strUrlBooks);
         Biblia result = restBooks.postJson(Biblia.class);
@@ -146,7 +146,7 @@ public class A12ComBiblia extends WikiMaker {
     }
 
     @Override
-    protected WikiBiblia makeWiki(Object download) {
+    protected WikiBiblia makeWiki(Biblia download) {
         Biblia biblia = (Biblia) download;
         DateTimeFormatter dtfHuman = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 

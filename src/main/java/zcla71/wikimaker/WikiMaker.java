@@ -9,15 +9,15 @@ import zcla71.utils.JacksonUtils;
 import zcla71.wikimaker.wiki.biblia.WikiBiblia;
 
 @Slf4j
-public abstract class WikiMaker {
+public abstract class WikiMaker<T> {
     // Retorna o ID da bíblia
     protected abstract String getId();
     // Retorna a classe do objeto com os dados de download
-    protected abstract Class<? extends Object> getDownloadClass();
+    protected abstract Class<T> getDownloadClass();
     // Retorna o objeto contendo o download dos dados
-    protected abstract Object doDownload() throws Exception;
+    protected abstract T doDownload() throws Exception;
     // Cria o wiki a partir do download
-    protected abstract WikiBiblia makeWiki(Object download);
+    protected abstract WikiBiblia makeWiki(T download);
 
     protected WikiMaker() throws Exception {
         log.info(getId());
@@ -26,7 +26,7 @@ public abstract class WikiMaker {
         JacksonUtils.enableJavaTime(objectMapper);
 
         File downloadFile = new File(this.getDownloadFileName());
-        Object download = null;
+        T download = null;
         if (downloadFile.exists()) {
             log.info("\tDownload já gerado. Carregando.");
             download = objectMapper.readValue(downloadFile, this.getDownloadClass());
