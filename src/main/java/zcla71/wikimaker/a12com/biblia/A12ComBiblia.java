@@ -1,22 +1,15 @@
 package zcla71.wikimaker.a12com.biblia;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.exc.StreamReadException;
-import com.fasterxml.jackson.databind.DatabindException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import lombok.extern.slf4j.Slf4j;
 import zcla71.tiddlywiki.TiddlyWiki;
-import zcla71.utils.JacksonUtils;
 import zcla71.utils.RestCall;
+import zcla71.wikimaker.WikiMaker;
 import zcla71.wikimaker.wiki.biblia.TiddlerBiblia;
 import zcla71.wikimaker.wiki.biblia.TiddlerCapitulo;
 import zcla71.wikimaker.wiki.biblia.TiddlerLivro;
@@ -24,12 +17,10 @@ import zcla71.wikimaker.wiki.biblia.TiddlerVersiculo;
 import zcla71.wikimaker.wiki.biblia.WikiBiblia;
 
 @Slf4j
-public class A12ComBiblia {
-    private static final String ID = "a12_com_biblia";
+public class A12ComBiblia extends WikiMaker {
     private static final String NOME = "Bíblia de Aparecida";
     private static final String SITE_URL = "https://www.a12.com/biblia";
     private static final String BASE_API_URL = "https://www.a12.com/bible-api/";
-    private static final String JSON_DOWNLOAD_FILE_NAME = "./data/download/" + ID + ".json";
     private static final Map<String, String> MAP_LIVRO = Map.ofEntries(
             Map.entry("genesis", "Gn"),
             Map.entry("exodo", "Ex"),
@@ -104,43 +95,23 @@ public class A12ComBiblia {
             Map.entry("iii-sao-joao", "3Jo"),
             Map.entry("sao-judas", "Jd"),
             Map.entry("apocalipse", "Ap"));
-    private static final String WIKI_OUTPUT_FILE = "./data/wiki/" + ID + ".html";
-    private static final String JSON_OUTPUT_FILE_NAME = "./data/json/" + ID + ".json";
 
-    public A12ComBiblia() throws StreamReadException, DatabindException, IOException, URISyntaxException {
-        log.info(ID);
-
-        ObjectMapper objectMapper = JacksonUtils.getObjectMapperInstance();
-        JacksonUtils.enableJavaTime(objectMapper);
-
-        File jsonDownloadFile = new File(JSON_DOWNLOAD_FILE_NAME);
-        Biblia biblia = null;
-        if (jsonDownloadFile.exists()) {
-            log.info("\tDownload já gerado. Carregando.");
-            biblia = objectMapper.readValue(jsonDownloadFile, Biblia.class);
-        } else {
-            biblia = downloadBiblia();
-            objectMapper.writer(JacksonUtils.getPrettyPrinter()).writeValue(jsonDownloadFile, biblia);
-        }
-
-        File wikiOutputFile = new File(WIKI_OUTPUT_FILE);
-        WikiBiblia wiki = null;
-        if (wikiOutputFile.exists()) {
-            log.info("\tWiki já gerado. Carregando.");
-            wiki = new WikiBiblia(new File(WIKI_OUTPUT_FILE));
-        } else {
-            wiki = makeWiki(biblia);
-            log.info("\tSalvando wiki");
-            wiki.saveAsWiki(wikiOutputFile);
-        }
-
-        log.info("\tSalvando json");
-        wiki.saveAsJson(new File(JSON_OUTPUT_FILE_NAME));
+    @Override
+    protected String getId() {
+        return "a12_com_biblia";
     }
 
-    private Biblia downloadBiblia() throws URISyntaxException, StreamReadException, DatabindException, IOException {
-        log.info("\tDownload");
+    @Override
+    protected Class<? extends Object> getDownloadClass() {
+        return Biblia.class;
+    }
 
+    public A12ComBiblia() throws Exception {
+        super();
+    }
+
+    @Override
+    protected Object doDownload() throws Exception {
         String strUrlBooks = BASE_API_URL + "get_books";
         RestCall restBooks = new RestCall(strUrlBooks);
         Biblia result = restBooks.postJson(Biblia.class);
@@ -174,8 +145,9 @@ public class A12ComBiblia {
         return result;
     }
 
-    private WikiBiblia makeWiki(Biblia biblia) throws IOException {
-        log.info("\tGerando wiki");
+    @Override
+    protected WikiBiblia makeWiki(Object download) {
+        Biblia biblia = (Biblia) download;
         DateTimeFormatter dtfHuman = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
         WikiBiblia wiki = new WikiBiblia(

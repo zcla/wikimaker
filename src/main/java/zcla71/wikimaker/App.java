@@ -1,16 +1,9 @@
 package zcla71.wikimaker;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.sql.SQLException;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import com.fasterxml.jackson.core.exc.StreamReadException;
-import com.fasterxml.jackson.databind.DatabindException;
 
 import zcla71.mybible.MyBible;
 import zcla71.wikimaker.a12com.biblia.A12ComBiblia;
@@ -21,7 +14,7 @@ import zcla71.wikimaker.vaticanva.bible.VaticanVaBibleNovaVulgataLt;
 
 @SpringBootApplication
 public class App {
-	public static void main(String[] args) throws StreamReadException, DatabindException, IOException, URISyntaxException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, NoSuchFieldException, SQLException {
+	public static void main(String[] args) throws Exception {
 		// Bíblias
 		new A12ComBiblia();
 		new BibliaParresiaComBible();
