@@ -1,6 +1,5 @@
 package zcla71.wikimaker.bibliapauluscombr.biblia;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -9,13 +8,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import lombok.extern.slf4j.Slf4j;
 import zcla71.tiddlywiki.TiddlyWiki;
-import zcla71.utils.JacksonUtils;
 import zcla71.utils.RestCall;
 import zcla71.utils.StringUtils;
+import zcla71.wikimaker.WikiMaker;
 import zcla71.wikimaker.wiki.biblia.TiddlerBiblia;
 import zcla71.wikimaker.wiki.biblia.TiddlerCapitulo;
 import zcla71.wikimaker.wiki.biblia.TiddlerLivro;
@@ -23,42 +20,27 @@ import zcla71.wikimaker.wiki.biblia.TiddlerVersiculo;
 import zcla71.wikimaker.wiki.biblia.WikiBiblia;
 
 @Slf4j
-public class BibliaPaulusComBrBiblia {
-    private static final String ID = "biblia_paulus_com_br_biblia";
+public class BibliaPaulusComBrBiblia extends WikiMaker<Biblia> {
     private static final String NOME = "Bíblia Sagrada Edição Pastoral";
     private static final String SITE_URL = "https://biblia.paulus.com.br/";
     private static final String BASE_API_URL = "https://biblia.paulus.com.br/api/v1/";
-    private static final String JSON_DOWNLOAD_FILE_NAME = "./data/download/" + ID + ".json";
-    private static final String WIKI_OUTPUT_FILE = "./data/wiki/" + ID + ".html";
 
-    public BibliaPaulusComBrBiblia() throws MalformedURLException, IOException, URISyntaxException {
-        log.info(ID);
-
-        ObjectMapper objectMapper = JacksonUtils.getObjectMapperInstance();
-        JacksonUtils.enableJavaTime(objectMapper);
-
-        File jsonDownloadFile = new File(JSON_DOWNLOAD_FILE_NAME);
-        Biblia biblia = null;
-        if (jsonDownloadFile.exists()) {
-            log.info("\tJson já gerado.");
-            biblia = objectMapper.readValue(jsonDownloadFile, Biblia.class);
-        } else {
-            biblia = downloadBiblia();
-            objectMapper.writer(JacksonUtils.getPrettyPrinter()).writeValue(jsonDownloadFile, biblia);
-        }
-
-        File wikiOutputFile = new File(WIKI_OUTPUT_FILE);
-        if (wikiOutputFile.exists()) {
-            log.info("\tWiki já gerado.");
-            return;
-        }
-
-        WikiBiblia wiki = makeWiki(biblia);
-        log.info("\tSalvando wiki");
-        wiki.saveAsWiki(wikiOutputFile);
+    public BibliaPaulusComBrBiblia() throws Exception {
+        super();
     }
 
-    private Biblia downloadBiblia() throws MalformedURLException, IOException, URISyntaxException {
+    @Override
+    protected String getId() {
+        return "biblia_paulus_com_br_biblia";
+    }
+
+    @Override
+    protected Class<Biblia> getDownloadClass() {
+        return Biblia.class;
+    }
+
+    @Override
+    protected Biblia doDownload() throws Exception {
         Biblia result = new Biblia();
         result.setNome(NOME);
         result.setTestaments(downloadTestaments());
@@ -137,17 +119,17 @@ public class BibliaPaulusComBrBiblia {
         return StringUtils.removeAcentos(str.toLowerCase()).replaceAll(" ", "-");
     }
 
-    private WikiBiblia makeWiki(Biblia biblia) {
-        log.info("\tGerando wiki");
+    @Override
+    protected WikiBiblia makeWiki(Biblia download) {
         DateTimeFormatter dtfHuman = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
         WikiBiblia wiki = new WikiBiblia(
-                biblia.getNome(),
-                "Importada [[daqui|" + biblia.getTestaments().getUrlSite() + "]] em " + biblia.getTestaments().getTimestamp().format(dtfHuman) + "."
+                download.getNome(),
+                "Importada [[daqui|" + download.getTestaments().getUrlSite() + "]] em " + download.getTestaments().getTimestamp().format(dtfHuman) + "."
         );
 
         // Bíblia
-        bibliaToTiddler(biblia, wiki);
+        bibliaToTiddler(download, wiki);
 
         return wiki;
     }
