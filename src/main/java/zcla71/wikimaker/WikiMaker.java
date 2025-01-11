@@ -10,6 +10,11 @@ import zcla71.wikimaker.wiki.biblia.WikiBiblia;
 
 @Slf4j
 public abstract class WikiMaker<T> {
+    // Rotina chamada de inicialização da classe (gambiarra pra resolver os problemas de inicializações que teriam que vir antes de super())
+    @SuppressWarnings("unused")
+    protected void init(Object... arguments) {
+    }
+
     // Retorna o ID da bíblia
     protected abstract String getId();
     // Retorna a classe do objeto com os dados de download
@@ -19,7 +24,8 @@ public abstract class WikiMaker<T> {
     // Cria o wiki a partir do download
     protected abstract WikiBiblia makeWiki(T download);
 
-    protected WikiMaker() throws Exception {
+    protected WikiMaker(Object... arguments) throws Exception {
+        init(arguments);
         log.info(getId());
 
         ObjectMapper objectMapper = JacksonUtils.getObjectMapperInstance();
