@@ -1,6 +1,5 @@
 package zcla71.wikimaker.vaticanva.bible;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -15,13 +14,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.fasterxml.jackson.core.exc.StreamReadException;
-import com.fasterxml.jackson.databind.DatabindException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import lombok.extern.slf4j.Slf4j;
 import zcla71.tiddlywiki.TiddlyWiki;
-import zcla71.utils.JacksonUtils;
+import zcla71.wikimaker.WikiMaker;
 import zcla71.wikimaker.wiki.biblia.TiddlerBiblia;
 import zcla71.wikimaker.wiki.biblia.TiddlerCapitulo;
 import zcla71.wikimaker.wiki.biblia.TiddlerLivro;
@@ -29,8 +24,7 @@ import zcla71.wikimaker.wiki.biblia.TiddlerVersiculo;
 import zcla71.wikimaker.wiki.biblia.WikiBiblia;
 
 @Slf4j
-public class VaticanVaBibleNovaVulgataLt {
-    private static final String ID = "vatican_va_bible_nova_vulgata_lt";
+public class VaticanVaBibleNovaVulgataLt extends WikiMaker<Biblia> {
     private static final String NOME = "Nova Vulgata";
     private static final String BASE_URL = "https://www.vatican.va";
     private static final String SITE_URL = BASE_URL + "/archive/bible/nova_vulgata/documents/nova-vulgata_index_lt.html";
@@ -41,7 +35,6 @@ public class VaticanVaBibleNovaVulgataLt {
     private static final String REGEX_LIVRO = "^https:\\/\\/www\\.vatican\\.va\\/archive\\/bible\\/nova_vulgata\\/documents\\/nova-vulgata_[v|n]t_(.+?)_lt\\.html$";
     private static final String REGEX_LIVRO_GROUP_SIGLA = "$1";
     // private static final String REGEX_CAPITULO = "^https:\/\/liturgiadashoras\.online\/biblia\/biblia-jerusalem\/([^\/]+)\/(.+)\/$";
-    private static final String JSON_DOWNLOAD_FILE_NAME = "./data/download/" + ID + ".json";
     private static final Map<String, String> MAP_LIVRO = Map.ofEntries(
             Map.entry("genesis", "Gn"),
             Map.entry("exodus", "Ex"),
@@ -116,38 +109,23 @@ public class VaticanVaBibleNovaVulgataLt {
             Map.entry("epist-iii-ioannis", "3Jo"),
             Map.entry("epist-iudae", "Jd"),
             Map.entry("apocalypsis-ioannis", "Ap"));
-    private static final String WIKI_OUTPUT_FILE = "./data/wiki/" + ID + ".html";
 
-    public VaticanVaBibleNovaVulgataLt() throws StreamReadException, DatabindException, IOException {
-        log.info(ID);
-
-        ObjectMapper objectMapper = JacksonUtils.getObjectMapperInstance();
-        JacksonUtils.enableJavaTime(objectMapper);
-
-        File jsonDownloadFile = new File(JSON_DOWNLOAD_FILE_NAME);
-        Biblia biblia = null;
-        if (jsonDownloadFile.exists()) {
-            log.info("\tJson já gerado.");
-            biblia = objectMapper.readValue(jsonDownloadFile, Biblia.class);
-        } else {
-            biblia = downloadBiblia();
-            objectMapper.writer(JacksonUtils.getPrettyPrinter()).writeValue(jsonDownloadFile, biblia);
-        }
-
-        File wikiOutputFile = new File(WIKI_OUTPUT_FILE);
-        if (wikiOutputFile.exists()) {
-            log.info("\tWiki já gerado.");
-            return;
-        }
-
-        WikiBiblia wiki = makeWiki(biblia);
-        log.info("\tSalvando wiki");
-        wiki.saveAsWiki(wikiOutputFile);
+    public VaticanVaBibleNovaVulgataLt() throws Exception {
+        super();
     }
 
-    private Biblia downloadBiblia() throws IOException {
-        log.info("\tDownload");
+    @Override
+    protected String getId() {
+        return "vatican_va_bible_nova_vulgata_lt";
+    }
 
+    @Override
+    protected Class<Biblia> getDownloadClass() {
+        return Biblia.class;
+    }
+
+    @Override
+    protected Biblia doDownload() throws Exception {
         Biblia result = new Biblia(NOME, SITE_URL);
 
         for (String url : DOWNLOAD_URLS) {
@@ -182,20 +160,20 @@ public class VaticanVaBibleNovaVulgataLt {
         return result;
     }
 
-    private WikiBiblia makeWiki(Biblia biblia) {
-        log.info("\tGerando wiki");
+    @Override
+    protected WikiBiblia makeWiki(Biblia download) {
         DateTimeFormatter dtfHuman = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
         LocalDateTime now = LocalDateTime.now();
         System.out.println(now.format(dtfHuman));
 
         WikiBiblia wiki = new WikiBiblia(
-                biblia.getNome(),
-                "Importada [[daqui|" + biblia.getUrl() + "]] em " + biblia.getTimestamp().format(dtfHuman) + "."
+            download.getNome(),
+                "Importada [[daqui|" + download.getUrl() + "]] em " + download.getTimestamp().format(dtfHuman) + "."
         );
 
         // Bíblia
-        bibliaToTiddler(biblia, wiki);
+        bibliaToTiddler(download, wiki);
 
         return wiki;
     }
