@@ -96,6 +96,10 @@ public class A12ComBiblia extends WikiMaker<Biblia> {
             Map.entry("sao-judas", "Jd"),
             Map.entry("apocalipse", "Ap"));
 
+    public A12ComBiblia() throws Exception {
+        super();
+    }
+        
     @Override
     protected String getId() {
         return "a12_com_biblia";
@@ -104,10 +108,6 @@ public class A12ComBiblia extends WikiMaker<Biblia> {
     @Override
     protected Class<Biblia> getDownloadClass() {
         return Biblia.class;
-    }
-
-    public A12ComBiblia() throws Exception {
-        super();
     }
 
     @Override
