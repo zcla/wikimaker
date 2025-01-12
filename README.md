@@ -16,9 +16,8 @@ Criando tiddlywikis a partir de dados encontrados na internet
 
 ## Próximas
 
-* github.com/Bible-Projects - várias versões no formato MyBible
-  * `mybible` [pt] https://github.com/Bible-Projects/believers-sword-next/raw/refs/heads/main/Modules/Bible/B%C3%ADblia%20Ave-Maria%201959.SQLite3 Ave-Maria
-  * `mybible` [pt] https://github.com/Bible-Projects/believers-sword-next/raw/refs/heads/main/Modules/Bible/B%C3%ADblia%20Padre%20Matos%20Soares%201950.SQLite3 Matos Soares
+* https://github.com/pepaulo/Open-Source-Catholic-Bible - várias bíblias no formato MyBible
+  * `mybible` [pt] https://github.com/pepaulo/Open-Source-Catholic-Bible
 
 * clerus.org - Já importei em outro projeto, se não me engano, usando PowerShell; talvez o código sirva para todas as outras bíblias que há no mesmo site.
   * [pt] https://www.clerus.org/bibliaclerusonline/pt/66c.htm
@@ -70,11 +69,11 @@ Criando tiddlywikis a partir de dados encontrados na internet
   * [el] https://ebible.org/find/details.php?id=grcbrent The Greek Septuagint with Apocrypha, compiled by Sir Lancelot C. L. Brenton
   * [várias] https://ebible.org/find/ (não achei nenhuma católica em português; há versões em grego, tem que verificar se são confiáveis e úteis)
 
-* github.com/Bible-Projects - várias bíblias no formato MyBible
+* github.com/Bible-Projects/believers-sword-next - várias bíblias no formato MyBible
   * `mybible` [várias] https://github.com/Bible-Projects/believers-sword-next/tree/main/Modules/Bible - texto
   * `mybible` [várias] https://github.com/Bible-Projects/believers-sword-next/tree/main/Modules/Commentaries - comentários
 
-* github.com/Dancrf - Matos Soares em formato JSON
+* github.com/Dancrf/biblia-db - Matos Soares em formato JSON
   * `json` [pt] https://github.com/Dancrf/biblia-db/raw/refs/heads/main/biblia.json
 
 * github.com/scrollmapper - dezenas de versões em dezenas de línguas; não sei se há católicas.
