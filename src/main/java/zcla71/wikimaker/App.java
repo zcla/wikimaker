@@ -28,6 +28,8 @@ public class App {
 		new MyBibleZip(new URI("https://www.ph4.org/_dl.php?back=bbl&a=BJRD&b=mybible&c"), "ph4_org_BJRD");
 		new MyBibleZip(new URI("https://www.ph4.org/_dl.php?back=bbl&a=BPT%2709D&b=mybible&c"), "ph4_org_BPT_09D");
 		new MyBibleZip(new URI("https://www.ph4.org/_dl.php?back=bbl&a=CNBB&b=mybible&c"), "ph4_org_CNBB");
+        new MyBibleZip(new URI("https://www.ph4.org/_dl.php?back=bbl&a=DBFC&b=mybible&c"), "ph4_org_DBFC");
+        new MyBibleZip(new URI("https://www.ph4.org/_dl.php?back=bbl&a=DIF&b=mybible&c"), "ph4_org_DIF");
 		new VaticanVaBibleNovaVulgataLt();
 
 		SpringApplication.run(App.class, args);

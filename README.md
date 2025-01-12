@@ -89,6 +89,9 @@ Criando tiddlywikis a partir de dados encontrados na internet
 * newadvent.org
   * [el/en/lt] https://www.newadvent.org/bible/
 
+* https://www.paroquias.org/biblia/
+  * [pt-pt] https://www.paroquias.org/biblia/ Difusora Bíblica (Capuchinhos)
+
 * paulus.com.br - Bíblia Pastoral. Os textos parecem ser idênticos; ambos contêm notas.
   * [pt] https://www.paulus.com.br/biblia-pastoral/_INDEX.HTM Deve ser igual à `biblia_paulus_com_br_biblia`
 
