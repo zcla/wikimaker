@@ -80,6 +80,13 @@ public abstract class MyBible extends WikiMaker<Database> {
         } catch (Exception e) {
             // ignora
         }
+
+        // Os headers não colaboram; tenta pela url.
+        if (result == null) {
+            result = uri.toString();
+            result = result.substring(result.lastIndexOf("/") + 1);
+        }
+
         return result;
     }
 
