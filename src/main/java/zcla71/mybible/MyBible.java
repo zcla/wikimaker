@@ -281,13 +281,17 @@ public abstract class MyBible extends WikiMaker<Database> {
         }
 
         TiddlerLivro tiddlerLivro = new TiddlerLivro(
-            booksAll.getShort_name(),
+            padronizaSigla(booksAll.getShort_name()),
             booksAll.getLong_name(),
             database.getUrl(),
             database.getTimestamp(),
             sbTexto.toString()
         );
         return wiki.addLivro(tiddlerLivro);
+    }
+
+    protected String padronizaSigla(String sigla) {
+        return sigla;
     }
 
     private String capituloToTiddler(Database database, BooksAll booksAll, Verses versesChapter, WikiBiblia wiki) {
@@ -307,7 +311,7 @@ public abstract class MyBible extends WikiMaker<Database> {
         }
 
         TiddlerCapitulo tiddlerCapitulo = new TiddlerCapitulo(
-            booksAll.getShort_name(),
+            padronizaSigla(booksAll.getShort_name()),
             versesChapter.getChapter().toString(),
             database.getUrl(),
             database.getTimestamp(),
@@ -320,7 +324,7 @@ public abstract class MyBible extends WikiMaker<Database> {
         String numVersiculo = verses.getVerse().toString();
 
         TiddlerVersiculo tiddlerVersiculo = new TiddlerVersiculo(
-            booksAll.getShort_name(),
+            padronizaSigla(booksAll.getShort_name()),
             versesChapter.getChapter().toString(),
             numVersiculo,
             database.getUrl(),
