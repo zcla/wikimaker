@@ -11,6 +11,8 @@ public class StringUtils {
         return result;
     }
 
+    // TODO Fazer um método único com parâmetros startDelimiter e endDelimiter; "escapar" ao gerar regex
+    // TODO Fazer testes unitários
     public static String[] splitConsideringDoubleBrackets(String str) {
         String[] splitted = str.split("\\s+");
         ArrayList<String> result = new ArrayList<>();
@@ -38,7 +40,7 @@ public class StringUtils {
         }
         if (incluir != null) { // Se há colchetes duplos não fechados, faz o split ignorando os colchetes duplos
             ArrayList<String> resto = new ArrayList<>(Arrays.asList(incluir.split("\\s+")));
-            resto.set(0, "\"" + resto.get(0));
+            resto.set(0, "[[" + resto.get(0));
             result.addAll(resto);
         }
         return result.toArray(new String[0]);

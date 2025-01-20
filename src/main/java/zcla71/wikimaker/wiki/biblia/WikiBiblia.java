@@ -164,6 +164,15 @@ public class WikiBiblia {
         return title;
     }
 
+    public String addTitulo(TiddlerTitulo titulo) {
+        String title = fixTitle(titulo.getTitle());
+        if (this.tiddlerMap.get(title) != null) {
+            title += "/" + UUID.randomUUID().toString();
+        }
+        this.tiddlerMap.put(title, titulo);
+        return title;
+    }
+
     public void saveAsWiki(File wikiOutputFile) throws IOException {
         File wikiEmptyFile = new File(WIKI_EMPTY_FILE);
         if (!wikiEmptyFile.exists()) {
@@ -178,6 +187,7 @@ public class WikiBiblia {
         for (Entry<String, Object> entry : this.tiddlerMap.entrySet()) {
             boolean tratado = false;
             String title = entry.getKey();
+            log.info(title);
 
             if (entry.getValue() instanceof TiddlerBiblia biblia) {
                 tratado = true;
@@ -207,7 +217,6 @@ public class WikiBiblia {
             }
 
             if (entry.getValue() instanceof TiddlerCapitulo capitulo) {
-                log.info(title);
                 tratado = true;
                 Tiddler tiddlerCapitulo = new Tiddler(title);
                 tiddlerCapitulo.setTags("Capítulo");
@@ -242,6 +251,9 @@ public class WikiBiblia {
                 tratado = true;
                 Tiddler tiddlerIntroducaoBiblia = new Tiddler(title);
                 tiddlerIntroducaoBiblia.setTags("[[Introdução Bíblia]]");
+                if (!title.equals(introducaoBiblia.getTitle())) {
+                    tiddlerIntroducaoBiblia.setTags(tiddlerIntroducaoBiblia.getTags() + " Duplicado");
+                }
                 tiddlerIntroducaoBiblia.setText(introducaoBiblia.getTexto());
                 tiddlyWiki.insert(tiddlerIntroducaoBiblia);
             }
@@ -250,9 +262,29 @@ public class WikiBiblia {
                 tratado = true;
                 Tiddler tiddlerIntroducaoLivro = new Tiddler(title);
                 tiddlerIntroducaoLivro.setTags("[[Introdução Livro]]");
+                if (!title.equals(tiddlerIntroducaoLivro.getTitle())) {
+                    tiddlerIntroducaoLivro.setTags(tiddlerIntroducaoLivro.getTags() + " Duplicado");
+                }
                 tiddlerIntroducaoLivro.getCustomProperties().put("livro", introducaoLivro.getLivro());
                 tiddlerIntroducaoLivro.setText(introducaoLivro.getTexto());
                 tiddlyWiki.insert(tiddlerIntroducaoLivro);
+            }
+
+            if (entry.getValue() instanceof TiddlerTitulo titulo) {
+                tratado = true;
+                Tiddler tiddlerTitulo = new Tiddler(title);
+                tiddlerTitulo.setTags("Título");
+                if (!title.equals(tiddlerTitulo.getTitle())) {
+                    tiddlerTitulo.setTags(tiddlerTitulo.getTags() + " Duplicado");
+                }
+                tiddlerTitulo.getCustomProperties().put("livro", titulo.getLivro());
+                tiddlerTitulo.getCustomProperties().put("capitulo", titulo.getCapitulo());
+                tiddlerTitulo.getCustomProperties().put("versiculo", titulo.getVersiculo());
+                tiddlerTitulo.getCustomProperties().put("nivel", titulo.getNivel());
+                tiddlerTitulo.getCustomProperties().put("url", titulo.getUrl());
+                tiddlerTitulo.getCustomProperties().put("timestamp", titulo.getTimestamp().format(TiddlyWiki.DATE_TIME_FORMATTER_TIDDLYWIKI));
+                tiddlerTitulo.setText(titulo.getTexto());
+                tiddlyWiki.insert(tiddlerTitulo);
             }
 
             if (!tratado) {
