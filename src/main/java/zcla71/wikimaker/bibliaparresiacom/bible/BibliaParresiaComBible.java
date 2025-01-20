@@ -181,10 +181,12 @@ public class BibliaParresiaComBible extends WikiMaker<Biblia> {
     private String livroToTiddler(Biblia biblia, Livro livro, WikiBiblia wiki) {
         log.info("\t\t" + livro.getSigla());
 
-        StringBuilder sbTexto = new StringBuilder("! Capítulos");
+        StringBuilder sbTexto = new StringBuilder("! Capítulos" + TiddlyWiki.LINE_BREAK);
+        String separator = "";
         for (Capitulo capitulo : livro.getCapitulos()) {
             String title = capituloToTiddler(livro, capitulo, wiki);
-            sbTexto.append("\n* [[" + capitulo.getNumero() + "|" + title + "]]");
+            sbTexto.append(separator + "[[" + capitulo.getNumero() + "|" + title + "]]");
+            separator = " &bull; ";
         }
 
         TiddlerLivro tiddlerLivro = new TiddlerLivro(

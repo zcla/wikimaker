@@ -197,7 +197,8 @@ public class VaticanVaBibleNovaVulgataLt extends WikiMaker<Biblia> {
     private String livroToTiddler(Livro livro, WikiBiblia wiki) {
         log.info("\t\t" + livro.getSigla());
 
-        StringBuilder sbTexto = new StringBuilder("! Capítulos");
+        StringBuilder sbTexto = new StringBuilder("! Capítulos" + TiddlyWiki.LINE_BREAK);
+        String separator = "";
         Document html = Jsoup.parse(livro.getHtml());
         Elements links = html.select("a[name]");
         if (links.size() < 2) { // Livros com um só capítulo; sempre têm um <a name="top">
@@ -207,7 +208,8 @@ public class VaticanVaBibleNovaVulgataLt extends WikiMaker<Biblia> {
                 if (p.text().startsWith("1")) {
                     Element pCapitulo = p;
                     String title = capituloToTiddler(livro, numCapitulo, pCapitulo, wiki);
-                    sbTexto.append("\n* [[" + numCapitulo + "|" + title + "]]");
+                    sbTexto.append(separator + "[[" + numCapitulo + "|" + title + "]]");
+                    separator = " &bull; ";
                 }
             }
         } else { // nem precisava, mas...
@@ -223,7 +225,8 @@ public class VaticanVaBibleNovaVulgataLt extends WikiMaker<Biblia> {
                     }
         
                     String title = capituloToTiddler(livro, numCapitulo, pCapitulo, wiki);
-                    sbTexto.append("\n* [[" + numCapitulo + "|" + title + "]]");
+                    sbTexto.append(separator + "[[" + numCapitulo + "|" + title + "]]");
+                    separator = " &bull; ";
                 }
             }
         }

@@ -320,7 +320,7 @@ public abstract class MyBible extends WikiMaker<Database> {
             Integer current = verses.getChapter();
             if (!current.equals(last)) {
                 String title = capituloToTiddler(database, booksAll, verses, wiki);
-                sbTexto.append(separator + " [[" + verses.getChapter().toString() + "|" + title + "]]");
+                sbTexto.append(separator + "[[" + verses.getChapter().toString() + "|" + title + "]]");
                 last = current;
                 separator = " &bull; ";
             }

@@ -13,6 +13,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import lombok.extern.slf4j.Slf4j;
+import zcla71.tiddlywiki.TiddlyWiki;
 import zcla71.wikimaker.WikiMaker;
 import zcla71.wikimaker.wiki.biblia.TiddlerBiblia;
 import zcla71.wikimaker.wiki.biblia.TiddlerCapitulo;
@@ -248,10 +249,12 @@ public class LiturgiaDasHorasOnlineBiblia extends WikiMaker<Biblia> {
     private String livroToTiddler(Livro livro, WikiBiblia wiki) {
         log.info("\t\t" + livro.getSigla());
 
-        StringBuilder sbTexto = new StringBuilder("! Capítulos");
+        StringBuilder sbTexto = new StringBuilder("! Capítulos" + TiddlyWiki.LINE_BREAK);
+        String separator = "";
         for (Capitulo capitulo : livro.getCapitulos()) {
             String title = capituloToTiddler(livro, capitulo, wiki);
-            sbTexto.append("\n* [[" + capitulo.getNumero() + "|" + title + "]]");
+            sbTexto.append(separator + "[[" + capitulo.getNumero() + "|" + title + "]]");
+            separator = " &bull; ";
         }
 
         TiddlerLivro tiddlerLivro = new TiddlerLivro(

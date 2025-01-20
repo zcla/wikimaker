@@ -157,11 +157,13 @@ public class BibliaPaulusComBrBiblia extends WikiMaker<Biblia> {
         String sigla = tpoc.getAbbreviation();
         log.info("\t\t" + sigla);
 
-        StringBuilder sbTexto = new StringBuilder("! Capítulos");
+        StringBuilder sbTexto = new StringBuilder("! Capítulos" + TiddlyWiki.LINE_BREAK);
+        String separator = "";
         Collection<Chapter> chapters = biblia.getChapters().stream().filter(c -> c.getBookChildren().equals(livro.getData().getName())).toList();
         for (Chapter capitulo : chapters) {
             String title = capituloToTiddler(sigla, capitulo, wiki);
-            sbTexto.append("\n* [[" + capitulo.getChapter() + "|" + title + "]]");
+            sbTexto.append(separator + "[[" + capitulo.getChapter() + "|" + title + "]]");
+            separator = " &bull; ";
         }
 
         TiddlerLivro tiddlerLivro = new TiddlerLivro(
