@@ -1,6 +1,7 @@
 package zcla71.tiddlywiki;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
+import zcla71.utils.StringUtils;
 
 @Data
 public class Tiddler {
@@ -61,5 +63,10 @@ public class Tiddler {
     public Tiddler(String title) {
         this();
         this.title = title;
+    }
+
+    public boolean hasTag(String tag) {
+        String[] tags = StringUtils.splitConsideringDoubleBrackets(this.tags);
+        return Arrays.asList(tags).contains(tag);
     }
 }

@@ -15,7 +15,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -33,6 +35,8 @@ import zcla71.tiddlywiki.TiddlyWiki;
 import zcla71.wikimaker.WikiMaker;
 import zcla71.wikimaker.wiki.biblia.TiddlerBiblia;
 import zcla71.wikimaker.wiki.biblia.TiddlerCapitulo;
+import zcla71.wikimaker.wiki.biblia.TiddlerIntroducaoBiblia;
+import zcla71.wikimaker.wiki.biblia.TiddlerIntroducaoLivro;
 import zcla71.wikimaker.wiki.biblia.TiddlerLivro;
 import zcla71.wikimaker.wiki.biblia.TiddlerVersiculo;
 import zcla71.wikimaker.wiki.biblia.WikiBiblia;
@@ -43,6 +47,7 @@ public abstract class MyBible extends WikiMaker<Database> {
     private String id;
     @Getter(AccessLevel.PROTECTED)
     private URI uri;
+    private Map<Integer, TiddlerLivro> mapTiddlerLivro;
 
     protected MyBible(URI uri, String id) throws Exception {
         super(new Object[] { uri, id });
@@ -57,6 +62,7 @@ public abstract class MyBible extends WikiMaker<Database> {
     protected void init(Object... arguments) {
         this.uri = (URI) arguments[0];
         this.id = (String) arguments[1];
+        mapTiddlerLivro = new HashMap<>();
     }
 
     @Override
@@ -222,6 +228,8 @@ public abstract class MyBible extends WikiMaker<Database> {
 
     private String bibliaToTiddler(Database database, WikiBiblia wiki) {
         StringBuilder sbTexto = new StringBuilder("! Livros");
+
+        // books / booksAll / verses
         // Documentação: "MyBIble 4.4.3 alpha14 or a later version knows about both the books_all and the BOOKS table: it looks for the BOOKS_ALL table first and only if it is not found uses the BOOKS table."
         if (database.getBible().getBooksAll() != null && database.getBible().getBooksAll().size() > 0) {
             List<BooksAll> booksAllses = database.getBible().getBooksAll();
@@ -238,16 +246,33 @@ public abstract class MyBible extends WikiMaker<Database> {
                         name = booksAll.getLong_name();
                     }
                     String title = livroToTiddler(database, booksAll, wiki);
-                    sbTexto.append("\n* [[" + name + "|" + title + "]]");
+                    sbTexto.append(TiddlyWiki.LINE_BREAK + "* [[" + name + "|" + title + "]]");
                 }
             }
         } else {
             throw new RuntimeException("Implementar livroToTiddler(Books)");
-            // for (Books books : this.database.getBible().getBooks()) {
-            //     String title = livroToTiddler(biblia, livro, wiki);
-            //     sbTexto.append("\n* [[" + books.getLong_name() + "|" + title + "]]");
+            // for (Books books : database.getBible().getBooks()) {
+            //     String title = livroToTiddler(database, livro, wiki);
+            //     sbTexto.append(TiddlyWiki.LINE_BREAK + "* [[" + books.getLong_name() + "|" + title + "]]");
             // }
         }
+
+        // TODO introductions
+        if (database.getBible().getIntroductions() != null && database.getBible().getIntroductions().size() > 0) {
+            for (Introductions introductions : database.getBible().getIntroductions()) {
+                if (introductions.getBook_number() == 0) { // Introdução da Bíblia toda
+                    String title = introducaoBibliaToTiddler(database, introductions, wiki);
+                    sbTexto.append(TiddlyWiki.LINE_BREAK + TiddlyWiki.LINE_BREAK + "! [[Introdução|" + title + "]]" + TiddlyWiki.LINE_BREAK + "{{" + title + "}}");
+                } else { // Introdução de um livro
+                    BooksAll booksAll = database.getBible().getBooksAll().stream().filter(b -> b.getBook_number().equals(introductions.getBook_number())).findFirst().get();
+                    String title = introducaoLivroToTiddler(database, booksAll, introductions, wiki);
+                    TiddlerLivro tiddlerLivro = mapTiddlerLivro.get(booksAll.getBook_number());
+                    tiddlerLivro.setTexto(tiddlerLivro.getTexto() + TiddlyWiki.LINE_BREAK + TiddlyWiki.LINE_BREAK + "! [[Introdução|" + title + "]]" + TiddlyWiki.LINE_BREAK + "{{" + title + "}}");
+                }
+            }
+        }
+
+        // TODO stories
 
         TiddlerBiblia tiddlerBiblia = new TiddlerBiblia(
             database.getName(),
@@ -258,10 +283,29 @@ public abstract class MyBible extends WikiMaker<Database> {
         return wiki.setBiblia(tiddlerBiblia);
     }
 
+    private String introducaoBibliaToTiddler(Database database, Introductions introductions, WikiBiblia wiki) {
+        TiddlerIntroducaoBiblia tiddlerIntroducaoBiblia = new TiddlerIntroducaoBiblia(
+            database.getUrl(),
+            database.getTimestamp(),
+            introductions.getIntroduction()
+        );
+        return wiki.setIntroducaoBiblia(tiddlerIntroducaoBiblia);
+    }
+
+    private String introducaoLivroToTiddler(Database database, BooksAll booksAll, Introductions introductions, WikiBiblia wiki) {
+        TiddlerIntroducaoLivro tiddlerIntroducaoLivro = new TiddlerIntroducaoLivro(
+            database.getUrl(),
+            database.getTimestamp(),
+            padronizaSigla(booksAll.getShort_name()),
+            introductions.getIntroduction()
+        );
+        return wiki.addIntroducaoLivro(tiddlerIntroducaoLivro);
+    }
+
     private String livroToTiddler(Database database, BooksAll booksAll, WikiBiblia wiki) {
         log.info("\t\t" + booksAll.getShort_name());
 
-        StringBuilder sbTexto = new StringBuilder("! Capítulos");
+        StringBuilder sbTexto = new StringBuilder("! Capítulos" + TiddlyWiki.LINE_BREAK);
         Integer last = null;
         List<Verses> verseses = database.getBible().getVerses().stream().filter(v -> v.getBook_number().equals(booksAll.getBook_number())).toList();
         verseses = new ArrayList<>(verseses);
@@ -271,12 +315,14 @@ public abstract class MyBible extends WikiMaker<Database> {
                 return v1.getChapter().compareTo(v2.getChapter());
             }
         });
+        String separator = "";
         for (Verses verses : verseses) {
             Integer current = verses.getChapter();
             if (!current.equals(last)) {
                 String title = capituloToTiddler(database, booksAll, verses, wiki);
-                sbTexto.append("\n* [[" + verses.getChapter().toString() + "|" + title + "]]");
+                sbTexto.append(separator + " [[" + verses.getChapter().toString() + "|" + title + "]]");
                 last = current;
+                separator = " &bull; ";
             }
         }
 
@@ -287,6 +333,7 @@ public abstract class MyBible extends WikiMaker<Database> {
             database.getTimestamp(),
             sbTexto.toString()
         );
+        mapTiddlerLivro.put(booksAll.getBook_number(), tiddlerLivro);
         return wiki.addLivro(tiddlerLivro);
     }
 

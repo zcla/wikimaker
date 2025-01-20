@@ -109,7 +109,7 @@ public class TiddlyWiki {
     }
 
     public List<Tiddler> listByTag(String tag) {
-        return tiddlers.stream().filter(t -> (t.getTags() != null) && t.getTags().contains(tag)).toList();
+        return tiddlers.stream().filter(t -> (t.getTags() != null) && t.hasTag(tag)).toList();
     }
 
     public void save() throws IOException {

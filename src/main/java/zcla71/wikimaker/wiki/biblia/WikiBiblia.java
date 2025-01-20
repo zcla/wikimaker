@@ -42,6 +42,11 @@ public class WikiBiblia {
     @Getter(AccessLevel.PRIVATE)
     @Setter(AccessLevel.PRIVATE)
     private Collection<TiddlerVersiculo> versiculos;
+    @Setter(AccessLevel.NONE)
+    private TiddlerIntroducaoBiblia introducaoBiblia;
+    @Getter(AccessLevel.PRIVATE)
+    @Setter(AccessLevel.PRIVATE)
+    private Collection<TiddlerIntroducaoLivro> introducoesLivros;
     private Map<String, Object> tiddlerMap;
 
     private String fixTitle(String title) {
@@ -61,6 +66,7 @@ public class WikiBiblia {
         this.livros = new ArrayList<>();
         this.capitulos = new ArrayList<>();
         this.versiculos = new ArrayList<>();
+        this.introducoesLivros = new ArrayList<>();
         this.tiddlerMap = new LinkedHashMap<>();
     }
 
@@ -132,6 +138,29 @@ public class WikiBiblia {
         }
         this.versiculos.add(versiculo);
         this.tiddlerMap.put(title, versiculo);
+        return title;
+    }
+
+    public String setIntroducaoBiblia(TiddlerIntroducaoBiblia introducao) {
+        if (this.introducaoBiblia != null) {
+            this.tiddlerMap.remove(this.introducaoBiblia.getTitle());
+        }
+        String title = fixTitle(introducao.getTitle());
+        if (this.tiddlerMap.get(title) != null) {
+            title += "/" + UUID.randomUUID().toString();
+        }
+        this.introducaoBiblia = introducao;
+        this.tiddlerMap.put(title, introducao);
+        return title;
+    }
+
+    public String addIntroducaoLivro(TiddlerIntroducaoLivro introducao) {
+        String title = fixTitle(introducao.getTitle());
+        if (this.tiddlerMap.get(title) != null) {
+            title += "/" + UUID.randomUUID().toString();
+        }
+        this.introducoesLivros.add(introducao);
+        this.tiddlerMap.put(title, introducao);
         return title;
     }
 
@@ -207,6 +236,23 @@ public class WikiBiblia {
                 tiddlerVersiculo.getCustomProperties().put("timestamp", versiculo.getTimestamp().format(TiddlyWiki.DATE_TIME_FORMATTER_TIDDLYWIKI));
                 tiddlerVersiculo.setText(versiculo.getTexto());
                 tiddlyWiki.insert(tiddlerVersiculo);
+            }
+
+            if (entry.getValue() instanceof TiddlerIntroducaoBiblia introducaoBiblia) {
+                tratado = true;
+                Tiddler tiddlerIntroducaoBiblia = new Tiddler(title);
+                tiddlerIntroducaoBiblia.setTags("[[Introdução Bíblia]]");
+                tiddlerIntroducaoBiblia.setText(introducaoBiblia.getTexto());
+                tiddlyWiki.insert(tiddlerIntroducaoBiblia);
+            }
+
+            if (entry.getValue() instanceof TiddlerIntroducaoLivro introducaoLivro) {
+                tratado = true;
+                Tiddler tiddlerIntroducaoLivro = new Tiddler(title);
+                tiddlerIntroducaoLivro.setTags("[[Introdução Livro]]");
+                tiddlerIntroducaoLivro.getCustomProperties().put("livro", introducaoLivro.getLivro());
+                tiddlerIntroducaoLivro.setText(introducaoLivro.getTexto());
+                tiddlyWiki.insert(tiddlerIntroducaoLivro);
             }
 
             if (!tratado) {
