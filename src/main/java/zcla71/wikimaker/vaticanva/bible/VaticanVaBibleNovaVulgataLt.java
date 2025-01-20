@@ -1,7 +1,6 @@
 package zcla71.wikimaker.vaticanva.bible;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collection;
@@ -163,9 +162,6 @@ public class VaticanVaBibleNovaVulgataLt extends WikiMaker<Biblia> {
     @Override
     protected WikiBiblia makeWiki(Biblia download) {
         DateTimeFormatter dtfHuman = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-
-        LocalDateTime now = LocalDateTime.now();
-        System.out.println(now.format(dtfHuman));
 
         WikiBiblia wiki = new WikiBiblia(
             download.getNome(),
