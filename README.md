@@ -26,6 +26,10 @@ Criando tiddlywikis a partir de dados encontrados na internet
 * https://github.com/pepaulo/Open-Source-Catholic-Bible - várias bíblias no formato MyBible
   * `mybible` [pt] https://github.com/pepaulo/Open-Source-Catholic-Bible
 
+* die-bibel.de => Versões usadas na tradução da Bíblia CNBB 2019
+  * [he] https://www.die-bibel.de/en/bible/BHS/
+  * [el] https://www.die-bibel.de/en/bible/NA28/
+
 * clerus.org - Já importei em outro projeto, se não me engano, usando PowerShell; talvez o código sirva para todas as outras bíblias que há no mesmo site.
   * [pt] https://www.clerus.org/bibliaclerusonline/pt/66c.htm
 
@@ -67,9 +71,6 @@ Criando tiddlywikis a partir de dados encontrados na internet
   * [es] https://www.clerus.org/bibliaclerusonline/es/66c.htm
   * [fr] https://www.clerus.org/bibliaclerusonline/fr/66c.htm
   * [it] https://www.clerus.org/bibliaclerusonline/it/66c.htm
-
-* die-bibel.de
-  * [el] https://www.die-bibel.de/en/bible/NA28/
 
 * ebible.org Muitas bíblias disponíveis para download em vários formatos: VPL (texto sem formatação; facílimo de importar), USFX (xml com texto, estrutura e comentários), USFM	(formato esquisito, mas que dá pra ler, com texto, estrutura e comentários), browserBible (html, não muito bom pra importar, mas ótimo para visualizar a estrutura dos dados)
   * [la] https://ebible.org/find/details.php?id=latVUC Clementine Vulgate of 1598 with Glossa Ordinaria Migne edition 1880 in Latin
