@@ -2,6 +2,7 @@ package zcla71.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.PrettyPrinter;
@@ -23,6 +24,7 @@ public class JacksonUtils {
         ObjectMapper result = new ObjectMapper();
         result.setSerializationInclusion(Include.NON_NULL);
         result.enable(SerializationFeature.INDENT_OUTPUT);
+        result.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
         return result;
     }
 
