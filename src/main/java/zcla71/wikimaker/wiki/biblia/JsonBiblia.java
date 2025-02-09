@@ -12,6 +12,7 @@ public class JsonBiblia {
     private String url;
     private LocalDateTime timestamp;
     private Collection<JsonLivro> livros;
+    private JsonIntroducaoBiblia introducaoBiblia;
     
     public JsonBiblia(TiddlerBiblia biblia) {
         this.nome = biblia.getNome();

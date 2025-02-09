@@ -361,9 +361,11 @@ public abstract class MyBible extends WikiMaker<Database> {
                 for (Stories stories : storieses) {
                     String title = tituloToTiddler(database, booksAll, stories, wiki);
                     TiddlerTitulo titulo = (TiddlerTitulo) wiki.getTiddlerMap().get(title);
+                    if (sbTexto.length() > 0) {
+                        sbTexto.append(TiddlyWiki.LINE_BREAK);
+                    }
                     // TODO Criar constante para 🔗
-                    sbTexto.append(TiddlyWiki.LINE_BREAK +
-                            "!".repeat(Integer.parseInt(titulo.getNivel())) +
+                    sbTexto.append("!".repeat(Integer.parseInt(titulo.getNivel())) +
                             " [[🔗|" + title + "]]{{" + title + "}}" +
                             TiddlyWiki.LINE_BREAK);
                 }

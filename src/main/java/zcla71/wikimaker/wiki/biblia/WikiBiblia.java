@@ -47,6 +47,9 @@ public class WikiBiblia {
     @Getter(AccessLevel.PRIVATE)
     @Setter(AccessLevel.PRIVATE)
     private Collection<TiddlerIntroducaoLivro> introducoesLivros;
+    @Getter(AccessLevel.PRIVATE)
+    @Setter(AccessLevel.PRIVATE)
+    private Collection<TiddlerTitulo> titulos;
     private Map<String, Object> tiddlerMap;
 
     private String fixTitle(String title) {
@@ -67,6 +70,7 @@ public class WikiBiblia {
         this.capitulos = new ArrayList<>();
         this.versiculos = new ArrayList<>();
         this.introducoesLivros = new ArrayList<>();
+        this.titulos = new ArrayList<>();
         this.tiddlerMap = new LinkedHashMap<>();
     }
 
@@ -100,9 +104,24 @@ public class WikiBiblia {
         for (Tiddler versiculo : versiculos) {
             this.addVersiculo(new TiddlerVersiculo(versiculo));
         }
-    }
 
-    // TODO public WikiBiblia(JsonBiblia jsonBiblia) {}
+        List<Tiddler> introducoesBiblia = tiddlyWiki.listByTag("Introdução Bíblia");
+        for (Tiddler introducaoBiblia : introducoesBiblia) {
+            this.setIntroducaoBiblia(new TiddlerIntroducaoBiblia(introducaoBiblia));
+        }
+
+        this.introducoesLivros = new ArrayList<>();
+        List<Tiddler> introducoesLivro = tiddlyWiki.listByTag("Introdução Livro");
+        for (Tiddler introducaoLivro : introducoesLivro) {
+            this.addIntroducaoLivro(new TiddlerIntroducaoLivro(introducaoLivro));
+        }
+
+        this.titulos = new ArrayList<>();
+        List<Tiddler> titulos = tiddlyWiki.listByTag("Título");
+        for (Tiddler titulo : titulos) {
+            this.addTitulo(new TiddlerTitulo(titulo));
+        }
+    }
 
     public String setBiblia(TiddlerBiblia biblia) {
         String title = fixTitle(biblia.getTitle());
@@ -169,6 +188,7 @@ public class WikiBiblia {
         if (this.tiddlerMap.get(title) != null) {
             title += "/" + UUID.randomUUID().toString();
         }
+        this.titulos.add(titulo);
         this.tiddlerMap.put(title, titulo);
         return title;
     }
@@ -254,6 +274,8 @@ public class WikiBiblia {
                 if (!title.equals(introducaoBiblia.getTitle())) {
                     tiddlerIntroducaoBiblia.setTags(tiddlerIntroducaoBiblia.getTags() + " Duplicado");
                 }
+                tiddlerIntroducaoBiblia.getCustomProperties().put("url", introducaoBiblia.getUrl());
+                tiddlerIntroducaoBiblia.getCustomProperties().put("timestamp", introducaoBiblia.getTimestamp().format(TiddlyWiki.DATE_TIME_FORMATTER_TIDDLYWIKI));
                 tiddlerIntroducaoBiblia.setText(introducaoBiblia.getTexto());
                 tiddlyWiki.insert(tiddlerIntroducaoBiblia);
             }
@@ -266,6 +288,8 @@ public class WikiBiblia {
                     tiddlerIntroducaoLivro.setTags(tiddlerIntroducaoLivro.getTags() + " Duplicado");
                 }
                 tiddlerIntroducaoLivro.getCustomProperties().put("livro", introducaoLivro.getLivro());
+                tiddlerIntroducaoLivro.getCustomProperties().put("url", introducaoLivro.getUrl());
+                tiddlerIntroducaoLivro.getCustomProperties().put("timestamp", introducaoLivro.getTimestamp().format(TiddlyWiki.DATE_TIME_FORMATTER_TIDDLYWIKI));
                 tiddlerIntroducaoLivro.setText(introducaoLivro.getTexto());
                 tiddlyWiki.insert(tiddlerIntroducaoLivro);
             }
@@ -320,6 +344,25 @@ public class WikiBiblia {
             JsonLivro jLivro = result.getLivros().stream().filter(l -> l.getSigla().equals(tVersiculo.getLivro())).findFirst().get();
             JsonCapitulo jCapitulo = jLivro.getCapitulos().stream().filter(c -> c.getNumero().equals(tVersiculo.getCapitulo())).findFirst().get();
             jCapitulo.getVersiculos().add(jVersiculo);
+        }
+
+        if (this.getIntroducaoBiblia() != null) {
+            JsonIntroducaoBiblia jIntroducaoBiblia = new JsonIntroducaoBiblia(this.getIntroducaoBiblia());
+            result.setIntroducaoBiblia(jIntroducaoBiblia);
+        }
+
+        for (TiddlerIntroducaoLivro tIntroducaoLivro : this.getIntroducoesLivros()) {
+            JsonIntroducaoLivro jIntroducaoLivro = new JsonIntroducaoLivro(tIntroducaoLivro);
+            JsonLivro jLivro = result.getLivros().stream().filter(l -> l.getSigla().equals(tIntroducaoLivro.getLivro())).findFirst().get();
+            jLivro.setIntroducao(jIntroducaoLivro);
+        }
+
+        for (TiddlerTitulo tTitulo : this.getTitulos()) {
+            JsonTitulo jTitulo = new JsonTitulo(tTitulo);
+            JsonLivro jLivro = result.getLivros().stream().filter(l -> l.getSigla().equals(tTitulo.getLivro())).findFirst().get();
+            JsonCapitulo jCapitulo = jLivro.getCapitulos().stream().filter(c -> c.getNumero().equals(tTitulo.getCapitulo())).findFirst().get();
+            JsonVersiculo jVersiculo = jCapitulo.getVersiculos().stream().filter(v -> v.getNumero().equals(tTitulo.getVersiculo())).findFirst().get();
+            jVersiculo.getTitulos().add(jTitulo);
         }
 
         return result;

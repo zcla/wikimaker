@@ -13,6 +13,7 @@ public class JsonLivro {
     private String url;
     private LocalDateTime timestamp;
     private Collection<JsonCapitulo> capitulos;
+    private JsonIntroducaoLivro introducao;
     
     public JsonLivro(TiddlerLivro livro) {
         this.sigla = livro.getSigla();
