@@ -16,6 +16,7 @@ Criando tiddlywikis a partir de dados encontrados na internet
 * [`ph4_org_CNBB`](https://www.ph4.org/_dl.php?back=bbl&a=CNBB&b=mybible&c) Bíblia CNBB 2002
 * [`ph4_org_DBFC`](https://www.ph4.org/_dl.php?back=bbl&a=DBFC&b=mybible&c) Bíblia Difusora Bíblica (Portugal)
 * [`ph4_org_DIF`](https://www.ph4.org/_dl.php?back=bbl&a=DIF&b=mybible&c) Bíblia Difusora Bíblica (Portugal)
+* [`ph4_org_EUNSA`](https://www.ph4.org/_dl.php?back=bbl&a=EUNSA&b=mybible&c) Bíblia de Navarra
 * [`vatican_va_bible_nova_vulgata_lt`](https://www.vatican.va/archive/bible/nova_vulgata/documents/nova-vulgata_index_lt.html) Nova Vulgata (Vaticano)
 
 ## Próximas

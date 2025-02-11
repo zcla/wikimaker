@@ -12,6 +12,7 @@ import zcla71.mybible.MyBibleZipPh4OrgBpt09d;
 import zcla71.mybible.MyBibleZipPh4OrgCnbb;
 import zcla71.mybible.MyBibleZipPh4OrgDbfc;
 import zcla71.mybible.MyBibleZipPh4OrgDif;
+import zcla71.mybible.MyBibleZipPh4OrgEunsa;
 import zcla71.wikimaker.a12com.biblia.A12ComBiblia;
 import zcla71.wikimaker.bibliaparresiacom.bible.BibliaParresiaComBible;
 import zcla71.wikimaker.bibliapauluscombr.biblia.BibliaPaulusComBrBiblia;
@@ -35,6 +36,7 @@ public class App {
 		new MyBibleZipPh4OrgCnbb();
         new MyBibleZipPh4OrgDbfc();
         new MyBibleZipPh4OrgDif();
+		new MyBibleZipPh4OrgEunsa();
 		new VaticanVaBibleNovaVulgataLt();
 
 		SpringApplication.run(App.class, args);
