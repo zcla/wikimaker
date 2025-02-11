@@ -188,6 +188,11 @@ public abstract class MyBible extends WikiMaker<Database> {
                         database.getCommentaries().setCommentaries(commentaries);
                         break;
 
+                    case "content_fragments":
+                        Collection<zcla71.mybible.model.common.ContentFragments> contentFragments = sqLiteDb.getData(conn, tableName, zcla71.mybible.model.common.ContentFragments.class);
+                        database.getCommentaries().setContentFragments(contentFragments);
+                        break;
+
                     // Desconhecidos / não documentados
                     case "android_metadata":
                         // Aparecem em alguns arquivos; ignora
@@ -271,6 +276,8 @@ public abstract class MyBible extends WikiMaker<Database> {
                 }
             }
         }
+
+        // TODO commentaries
 
         TiddlerBiblia tiddlerBiblia = new TiddlerBiblia(
             database.getName(),
