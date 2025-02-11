@@ -195,6 +195,7 @@ public abstract class MyBible extends WikiMaker<Database> {
 
                     // Desconhecidos / não documentados
                     case "android_metadata":
+                    case "introductions": // TODO Na Bíblia onde ele aparece (BPT'09D), ele está vazio; talvez fosse legal fazer um filtro só de tabelas que têm dados.
                         // Aparecem em alguns arquivos; ignora
                         break;
 
