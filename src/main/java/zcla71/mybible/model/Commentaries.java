@@ -3,8 +3,8 @@ package zcla71.mybible.model;
 import java.util.Collection;
 
 import lombok.Data;
-import zcla71.mybible.model.commentaries.Info;
 import zcla71.mybible.model.common.ContentFragments;
+import zcla71.mybible.model.common.Info;
 
 @Data
 public class Commentaries {

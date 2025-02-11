@@ -125,7 +125,7 @@ public abstract class MyBible extends WikiMaker<Database> {
                 log.info("\t" + tableName);
                 switch (tableName) {
                     case "info":
-                        List<zcla71.mybible.model.bible.Info> info = sqLiteDb.getData(conn, tableName, zcla71.mybible.model.bible.Info.class);
+                        List<zcla71.mybible.model.common.Info> info = sqLiteDb.getData(conn, tableName, zcla71.mybible.model.common.Info.class);
                         database.getBible().setInfo(info);
                         break;
 
@@ -179,7 +179,7 @@ public abstract class MyBible extends WikiMaker<Database> {
                 log.info("\t" + tableName);
                 switch (tableName) {
                     case "info":
-                        Collection<zcla71.mybible.model.commentaries.Info> info = sqLiteDb.getData(conn, tableName, zcla71.mybible.model.commentaries.Info.class);
+                        Collection<zcla71.mybible.model.common.Info> info = sqLiteDb.getData(conn, tableName, zcla71.mybible.model.common.Info.class);
                         database.getCommentaries().setInfo(info);
                         break;
 

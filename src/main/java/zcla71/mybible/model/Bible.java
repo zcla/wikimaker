@@ -5,10 +5,10 @@ import java.util.List;
 import lombok.Data;
 import zcla71.mybible.model.bible.Books;
 import zcla71.mybible.model.bible.BooksAll;
-import zcla71.mybible.model.bible.Info;
 import zcla71.mybible.model.bible.Introductions;
 import zcla71.mybible.model.bible.Stories;
 import zcla71.mybible.model.bible.Verses;
+import zcla71.mybible.model.common.Info;
 
 @Data
 public class Bible {

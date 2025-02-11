@@ -1,8 +1,7 @@
-package zcla71.mybible.model.commentaries;
+package zcla71.mybible.model.common;
 
 import lombok.Data;
 
-// TODO Mover para ../common
 @Data
 // CREATE TABLE info (
 public class Info {
